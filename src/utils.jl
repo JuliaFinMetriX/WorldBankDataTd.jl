@@ -42,3 +42,24 @@ function formatDate(dat::ASCIIString)
     end
     return newDat
 end
+
+import Base.get
+function get(df::DataFrame, sb::Symbol, f::Function)
+    ## pick observation based on single entry in row
+    nObs, nVars = size(df)
+    logInd = Array(Bool, nObs)
+    for ii=1:nObs
+        logInd[ii] = f(df[sb][ii])
+    end
+    return df[logInd, :]
+end
+
+function get(df::DataFrame, f::Function)
+    ## pick observation based on complete row
+    nObs, nVars = size(df)
+    logInd = Array(Bool, nObs)
+    for ii=1:nObs
+        logInd[ii] = f(df[ii, :])
+    end
+    return df[logInd, :]
+end
