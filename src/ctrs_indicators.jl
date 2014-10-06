@@ -1,3 +1,17 @@
+function get_countries()
+    if country_cache == false
+        set_country_cache(download_countries())
+    end
+    country_cache
+end
+
+function get_indicators()
+    if indicator_cache == false
+        set_indicator_cache(download_indicators())
+    end
+    indicator_cache
+end
+
 function parse_indicator(json::Array{Any,1})
     indicator = ASCIIString[]
     name = UTF8String[]
@@ -95,16 +109,3 @@ function set_indicator_cache(df::AbstractDataFrame)
     global indicator_cache = df
 end
 
-function get_countries()
-    if country_cache == false
-        set_country_cache(download_countries())
-    end
-    country_cache
-end
-
-function get_indicators()
-    if indicator_cache == false
-        set_indicator_cache(download_indicators())
-    end
-    indicator_cache
-end
