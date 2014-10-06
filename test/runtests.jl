@@ -1,7 +1,11 @@
 using Base.Test
 using WorldBankData
 
-my_tests = ["countries.jl", "indicators.jl", "wdi.jl", "search_wdi.jl"] 
+my_tests = ["countries.jl",
+            "indicators.jl",
+            "utils.jl",
+            "wdi.jl",
+            "search_wdi.jl"] 
 
 println("Running tests:")
 
