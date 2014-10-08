@@ -1,6 +1,7 @@
 module TestWDICountries
 
 using Base.Test
+using DataFrames
 using WorldBankData
 
 
