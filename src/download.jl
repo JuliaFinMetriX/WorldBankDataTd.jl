@@ -71,7 +71,7 @@ function download_parse_json(url::ASCIIString)
     JSON.parse(bytestring(request.body))
 end
 
-@debug function parse_wdi(indicator::ASCIIString, json, startyear::Integer,
+function parse_wdi(indicator::ASCIIString, json, startyear::Integer,
                    endyear::Integer) 
     country_id = ASCIIString[] # no NA
     country_name = UTF8String[] # no NA
@@ -80,10 +80,10 @@ end
     date = ASCIIString[] # no NA
 
     for d in json
-        append!(country_id, d["country"]["id"]) # iso-2 
-        append!(country_name, d["country"]["value"]) # name 
+        append!(country_id, [d["country"]["id"]]) # iso-2 
+        append!(country_name, [d["country"]["value"]]) # name 
         push!(value, tofloat(d["value"]))
-        append!(date, d["date"])
+        append!(date, [d["date"]])
     end
 
     date = Date[formatDate(dat) for dat in date]
