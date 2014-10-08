@@ -14,29 +14,6 @@ function search_wdi(data::ASCIIString,entry::Symbol,regx::Regex)
     end
 end
 
-
-function regex_match(df::DataArray{UTF8String,1},
-                     regex::Regex)
-    return convert(DataArray{Bool, 1}, map(x -> ismatch(regex,x), df))
-end
-
-function df_match(df::AbstractDataFrame,
-                  entry::Symbol,
-                  regex::Regex)
-    return df[regex_match(df[entry],regex),:] # use symbol to get
-                                        # column 
-end
-
-function country_match(entry::Symbol,regex::Regex)
-    df = get_countries()
-    df_match(df,entry,regex)
-end
-
-function indicator_match(entry::Symbol,regex::Regex)
-    df = get_indicators()
-    df_match(df,entry,regex)
-end
-
 function search_countries(entry::Symbol,regx::Regex)
     # test whether chosen column name is valid
     entries = [ :iso3c,
@@ -75,4 +52,31 @@ function search_indicators(entry::Symbol,regx::Regex)
     indicator_match(entry,regx)
 end
 
+function country_match(entry::Symbol,regex::Regex)
+    df = get_countries()
+    df_match(df,entry,regex)
+end
+
+function indicator_match(entry::Symbol,regex::Regex)
+    df = get_indicators()
+    df_match(df,entry,regex)
+end
+
+function regex_match(da::DataArray{UTF8String,1},
+                     regex::Regex)
+    toCheck = !isna(da)
+    nObs = size(da, 1)
+    res = DataArray(Bool, nObs)
+    res[isna(da)] = false
+    checkRes = map(x -> ismatch(regex,x), da[toCheck])
+    res[toCheck] = checkRes
+    return res
+end
+
+function df_match(df::AbstractDataFrame,
+                  entry::Symbol,
+                  regex::Regex)
+    return df[regex_match(df[entry],regex),:] # use symbol to get
+                                        # column 
+end
 
