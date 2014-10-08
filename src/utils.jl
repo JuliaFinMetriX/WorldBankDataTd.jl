@@ -1,3 +1,6 @@
+## date handling functions
+##------------------------
+
 function getLastDayOfMonth(dt::Date)
     isendofmonth = x -> Dates.lastdayofmonth(x) == x
     Dates.tonext(isendofmonth, dt)
@@ -43,6 +46,9 @@ function formatDate(dat::ASCIIString)
     return newDat
 end
 
+## database style select functions
+##--------------------------------
+
 import Base.get
 function get(df::DataFrame, sb::Symbol, f::Function)
     ## pick observation based on single entry in row
@@ -63,3 +69,43 @@ function get(df::DataFrame, f::Function)
     end
     return df[logInd, :]
 end
+
+## conversion functions
+##---------------------
+
+function tofloat(f::String)
+     try
+         return float(f)
+     catch
+         return NA
+     end
+end
+
+function tofloat(Void)
+    return NA
+end
+
+function clean_and_push!(da::DataArray, Void)
+    push!(da, NA)
+end
+
+function clean_and_push!(da::DataArray, x::String)
+    if (x == "NA") | (x == "")
+        push!(da, NA)
+    else
+        push!(da, x)
+    end
+end
+
+## function clean_entry(x::Union(String,Nothing))
+##     if typeof(x) == Nothing # also equals Void
+##         return "NA"
+##     else
+##         return x
+##     end
+## end
+
+## function clean_append!(vals::Union(Array{UTF8String,1},Array{ASCIIString,1}),val::Union(UTF8String,ASCIIString,Nothing))
+##     append!(vals,[clean_entry(val)])
+## end
+

@@ -39,4 +39,40 @@ actOut = WorldBankData.getLastDayOfQuarter(Date(2014, 9, 30))
 @test Date(2014, 3, 31) == WorldBankData.formatDate("2014M03")
 @test Date(2014, 9, 30) == WorldBankData.formatDate("2014M09")
 
+## conversion to float
+##--------------------
+
+@test isequal(WorldBankData.tofloat("NA"), NA)
+@test WorldBankData.tofloat("1.23") == 1.23
+@test isequal(WorldBankData.tofloat(Void), NA)
+@test isequal(WorldBankData.tofloat(Nothing), NA)
+
+## appending to DataArray
+##-----------------------
+
+### push Void
+
+da = @data(["one", NA, "two"])
+expDa = @data(["one", NA, "two", NA])
+
+WorldBankData.clean_and_push!(da, Void)
+@test isequal(da, expDa)
+
+### push ""
+
+da = @data(["one", NA, "two"])
+expDa = @data(["one", NA, "two", NA])
+
+WorldBankData.clean_and_push!(da, "")
+@test isequal(da, expDa)
+
+### push "NA"
+
+da = @data(["one", NA, "two"])
+expDa = @data(["one", NA, "two", NA])
+
+WorldBankData.clean_and_push!(da, "NA")
+@test isequal(da, expDa)
+
+
 end
