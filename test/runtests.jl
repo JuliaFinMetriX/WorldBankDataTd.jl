@@ -5,6 +5,7 @@ my_tests = ["countries.jl",
             "indicators.jl",
             "utils.jl",
             "wdi.jl",
+            "format.jl,"
             "search_wdi.jl"] 
 
 println("Running tests:")
