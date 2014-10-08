@@ -17,6 +17,7 @@ function parse_indicator(json::Array{Any,1})
     name = UTF8String[]
     description = UTF8String[]
     source_database = UTF8String[]
+    source_databaseId = Int[]
     source_organization = UTF8String[]
 
     for d in json[2]
@@ -24,56 +25,59 @@ function parse_indicator(json::Array{Any,1})
         append!(name,[d["name"]])
         append!(description,[d["sourceNote"]])
         append!(source_database, [d["source"]["value"]])
-        # d["source"]["id"] not fetched
+        push!(source_databaseId, int(d["source"]["id"]))
         append!(source_organization, [d["sourceOrganization"]])
     end
 
     DataFrame(indicator = indicator, name = name,
               description = description,
               source_database = source_database,
+              source_databaseId = source_databaseId,
               source_organization = source_organization)
 end
 
-function tofloat(f::String)
-     try
-         return float(f)
-     catch
-         return NA
-     end
-end
-
 function parse_country(json::Array{Any,1})
-    iso3c = ASCIIString[]
-    iso2c = ASCIIString[]
-    name = UTF8String[]
-    capital = UTF8String[]
-    longitude = UTF8String[]
-    latitude = UTF8String[]
-    region = UTF8String[]
-    regionId = UTF8String[]
-    income = UTF8String[]
-    incomeId = UTF8String[]
-    lending = UTF8String[]
-    lendingId = UTF8String[]
 
+    ## never missing
+    iso3c = ASCIIString[] # no NAs
+    iso2c = ASCIIString[] # no NAs
+    name = UTF8String[] # no NAs
+    
+    capital = DataArray(UTF8String, 0)
+    region = DataArray(UTF8String, 0)               # make DataArray? aggr. 
+    regionId = DataArray(UTF8String, 0)             # make DataArray -> "NA"
+    income = DataArray(UTF8String, 0)               # make DataArray? aggr.
+    incomeId = DataArray(UTF8String, 0)             # make DataArray
+    lending = DataArray(UTF8String, 0)              # make DataArray? aggr.
+    lendingId = DataArray(UTF8String, 0)            # make DataArray
+
+    longitude = DataArray(Float64, 0)            # make it DataArray(Float)
+    latitude = DataArray(Float64, 0)             # make it DataArray(Float)
+    
     for d in json[2]
+        ## never missing values
         append!(iso3c,[d["id"]])
         append!(iso2c,[d["iso2Code"]])
         append!(name,[d["name"]])
-        append!(capital,[d["capitalCity"]])
-        append!(longitude,[d["longitude"]])
-        append!(latitude,[d["latitude"]])
-        append!(region,[d["region"]["value"]])
-        append!(income,[d["incomeLevel"]["value"]])
-        append!(lending,[d["lendingType"]["value"]])
-        append!(regionId,[d["region"]["id"]])
-        append!(incomeId,[d["incomeLevel"]["id"]])
-        append!(lendingId,[d["lendingType"]["id"]])
 
+        ## append for DataArrays? "" and "NA" to NA
+        clean_and_push!(capital,d["capitalCity"])
+        clean_and_push!(region,d["region"]["value"])
+        clean_and_push!(income,d["incomeLevel"]["value"])
+        clean_and_push!(lending,d["lendingType"]["value"])
+        clean_and_push!(regionId,d["region"]["id"])
+        clean_and_push!(incomeId,d["incomeLevel"]["id"])
+        clean_and_push!(lendingId,d["lendingType"]["id"])
+
+        ## numeric values or Void -> NA
+        push!(longitude, tofloat(d["longitude"]))
+        push!(latitude, tofloat(d["latitude"]))
     end
 
-    longitude = [tofloat(i) for i in longitude]
-    latitude = [tofloat(i) for i in latitude]
+    ## longitude = [tofloat(i) for i in longitude] # comprehension forces
+                                        # NA to NaN if convert(Float,
+                                        # NA) is defined
+    ## latitude = [tofloat(i) for i in latitude]
 
     DataFrame(iso3c = iso3c, iso2c = iso2c, name = name,
               region = region, regionId = regionId,
