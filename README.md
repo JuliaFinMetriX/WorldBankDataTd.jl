@@ -1,6 +1,10 @@
 World Bank Data in Julia
 ========================
 
+[![Build Status](https://travis-ci.org/JuliaFinMetriX/WorldBankData.jl.svg)](https://travis-ci.org/JuliaFinMetriX/WorldBankData.jl)
+
+
+
 The World Bank provides free access to data about development at
 [data.worldbank.org](http://data.worldbank.org).
 
@@ -15,7 +19,7 @@ It follows roughly the
 ## Installation
 
 ```julia
-julia> Pkg.clone("git://github.com/4gh/WorldBankData.jl.git")
+julia> Pkg.add("WorldBankData")
 ```
 
 ## Basic Examples
@@ -67,13 +71,13 @@ One can search for "countries" or "indicators" data.
 ### Example for country search by name
 
 ```julia
-julia> res=search_wdi("countries","name",r"united"i)
-julia> res["name"]
+julia> res = search_wdi("countries", :name, r"united"i)
+julia> res[:name]
 3-element DataArray{UTF8String,1}:
  "United Arab Emirates"
  "United Kingdom"
  "United States"
-julia> res["iso2c"]
+julia> res[:iso2c]
 3-element DataArray{ASCIIString,1}:
  "AE"
  "GB"
@@ -83,7 +87,7 @@ julia> res["iso2c"]
 ### Example for indicator search by description
 
 ```julia
-julia> res=search_wdi("indicators","description",r"gross national expenditure"i)
+julia> res = search_wdi("indicators", :description, r"gross national expenditure"i)
 6x5 DataFrame
 |-------|---------------------|------------|---------|
 | Col # | Name                | Type       | Missing |
@@ -93,7 +97,7 @@ julia> res=search_wdi("indicators","description",r"gross national expenditure"i)
 | 4     | source_database     | UTF8String | 0       |
 | 5     | source_organization | UTF8String | 0       |
 
-julia> res["name"]
+julia> res[:name]
 6-element DataArray{UTF8String,1}:
  "Gross national expenditure deflator (base year varies by country)"
  "Gross national expenditure (current US\$)"
@@ -102,7 +106,7 @@ julia> res["name"]
  "Gross national expenditure (constant LCU)"
  "Gross national expenditure (% of GDP)"
 
-julia> res["indicator"]
+julia> res[:indicator]
 6-element DataArray{UTF8String,1}:
  "NE.DAB.DEFL.ZS"
  "NE.DAB.TOTL.CD"
@@ -229,6 +233,14 @@ http://api.worldbank.org/countries/US/indicators/EN.ATM.CO2E.KT?date=1800:3000&p
 
 The data in the World Bank database changes infrequently. Therefore it
 makes little sense to download it every time a script is run.
+
+However, sometimes there might sneak in some errors into the cached
+data. In such a case, simply delete the current cache.
+
+```julia
+julia> clear_cache()
+Cache has been cleared.
+```
 
 #### Metadata
 
