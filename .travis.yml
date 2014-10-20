@@ -14,7 +14,7 @@ script:
   - julia -e 'Pkg.add("TimeData")'
   - julia -e 'Pkg.update()'
 #  - julia -e 'Pkg.init(); Pkg.add("WorldBankData")'
-  - julia -e 'Pkg.init(); Pkg.clone("https://github.com/cgroll/WorldBankData.jl.git")'
+  - julia -e 'Pkg.init(); Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankData.jl.git")'
   - echo "Testing latest release:"
   - julia -e 'Pkg.test("WorldBankData")'
   - julia -e 'Pkg.checkout("WorldBankData")'
