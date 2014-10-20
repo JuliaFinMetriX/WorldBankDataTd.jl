@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>WorldBankData.jl</title>
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+<meta charset='utf-8'>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+<header>
+<div class="inner">
+<h1>WorldBankData.jl</h1>
+<h2>WorldBankData package for Julia language</h2>
+<a href="https://github.com/JuliaFinMetriX/WorldBankData.jl" class="button"><small>View project on</small>GitHub</a>
+</div>
+</header>
+<div id="content-wrapper">
+<div class="inner clearfix">
+<aside id="sidebar">
+<a href="https://github.com/JuliaFinMetriX">
+<img src="./logo.png" width="200" height="114">
+</a>
+<a href="https://github.com/JuliaFinMetriX/WorldBankData.jl/zipball/master" class="button">
+<small>Download</small>
+.zip file
+</a>
+<a href="https://github.com/JuliaFinMetriX/WorldBankData.jl/tarball/master" class="button">
+<small>Download</small>
+.tar.gz file
+</a>
+<p class="repo-owner"><a href="https://github.com/JuliaFinMetriX/WorldBankData.jl"></a> maintained by <a href="https://github.com/cgroll">cgroll</a>.</p>
+</aside>
+<section id="main-content">
+<div>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js"></script>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        // Only one of the two following lines, depending on user settings
+        // First allows browser-native MathML display, second forces HTML/CSS
+        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 100,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        }
+    });
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">WorldBankData.jl</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. World Bank Data in Julia</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> World Bank Data in Julia</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+The World Bank provides free access to data about development at
+[data.worldbank.org](<a href="http://data.worldbank.org">http://data.worldbank.org</a>).
+</p>
+
+<p>
+The primary collection of development indicators is called World
+Development Indicators (WDI).
+</p>
+
+<p>
+This module has functions to easily access and download the data.
+</p>
+
+<p>
+It follows roughly the
+[R WDI package](<a href="http://cran.r-project.org/web/packages/WDI/index.html">http://cran.r-project.org/web/packages/WDI/index.html</a>).
+</p>
+
+<p>
+## Installation
+</p>
+
+<p>
+```julia
+julia&gt; Pkg.add("WorldBankData")
+```
+</p>
+
+<p>
+## Basic Examples
+</p>
+
+<p>
+Obtain a DataFrame with the gross national income per capita for the
+US and Brazil:
+</p>
+
+<p>
+```julia
+using WorldBankData
+df=wdi("NY.GNP.PCAP.CD", ["US","BR"])
+```
+</p>
+
+<p>
+### Multiple countries and indicators
+</p>
+
+<p>
+```julia
+using WorldBankData
+df=wdi(["NY.GNP.PCAP.CD","AG.LND.ARBL.HA.PC"], ["US","BR"], 1980, 2008, true)
+```
+</p>
+
+<p>
+This returns the GNI per capita and the arable land (hectares per
+person) for the time range 1980-2008 for the US and Brazil. It also
+attaches extra country information (the `true` argument) like the
+capital, longitude, latitude, income range, etc.
+</p>
+
+<p>
+## Optional arguments
+</p>
+
+<p>
+The `wdi` function has the following arguments:
+</p>
+
+<p>
+```julia
+wdi(indicators, countries, startyear, endyear, extra)
+```
+</p>
+
+<p>
+It needs a minimum of two arguments: the indicators (from the WDI
+database) and the countries (ISO two letter country codes). The rest
+are optional.
+</p>
+
+<p>
+extra: If `extra=true`, `wdi()` attaches extra country data (like the
+capital) to the returned DataFrame.
+</p>
+
+<p>
+## Searching
+</p>
+
+<p>
+The most convenient way to explore the database is probably through a
+web browser at [data.worldbank.org](<a href="http://data.worldbank.org">http://data.worldbank.org</a>).
+</p>
+
+<p>
+However, the module does provide a search function: `search<sub>wdi</sub>()`.
+</p>
+
+<p>
+One can search for "countries" or "indicators" data.
+</p>
+
+<p>
+### Example for country search by name
+</p>
+
+<p>
+```julia
+julia&gt; res = search<sub>wdi</sub>("countries", :name, r"united"i)
+julia&gt; res[:name]
+3-element DataArray{UTF8String,1}:
+ "United Arab Emirates"
+ "United Kingdom"
+ "United States"
+julia&gt; res[:iso2c]
+3-element DataArray{ASCIIString,1}:
+ "AE"
+ "GB"
+ "US"
+```
+</p>
+
+<p>
+### Example for indicator search by description
+</p>
+
+<p>
+```julia
+julia&gt; res = search<sub>wdi</sub>("indicators", :description, r"gross national expenditure"i)
+6x5 DataFrame
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="right">Col #</td>
+<td class="left">Name</td>
+<td class="left">Type</td>
+<td class="right">Missing</td>
+</tr>
+
+<tr>
+<td class="right">1</td>
+<td class="left">description</td>
+<td class="left">UTF8String</td>
+<td class="right">0</td>
+</tr>
+
+<tr>
+<td class="right">2</td>
+<td class="left">indicator</td>
+<td class="left">UTF8String</td>
+<td class="right">0</td>
+</tr>
+
+<tr>
+<td class="right">3</td>
+<td class="left">name</td>
+<td class="left">UTF8String</td>
+<td class="right">0</td>
+</tr>
+
+<tr>
+<td class="right">4</td>
+<td class="left">source<sub>database</sub></td>
+<td class="left">UTF8String</td>
+<td class="right">0</td>
+</tr>
+
+<tr>
+<td class="right">5</td>
+<td class="left">source<sub>organization</sub></td>
+<td class="left">UTF8String</td>
+<td class="right">0</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+julia&gt; res[:name]
+6-element DataArray{UTF8String,1}:
+ "Gross national expenditure deflator (base year varies by country)"
+ "Gross national expenditure (current US\\()"
+ "Gross national expenditure (current LCU)"
+ "Gross national expenditure (constant 2005 US\\))"
+ "Gross national expenditure (constant LCU)"
+ "Gross national expenditure (% of GDP)"
+</p>
+
+<p>
+julia&gt; res[:indicator]
+6-element DataArray{UTF8String,1}:
+ "NE.DAB.DEFL.ZS"
+ "NE.DAB.TOTL.CD"
+ "NE.DAB.TOTL.CN"
+ "NE.DAB.TOTL.KD"
+ "NE.DAB.TOTL.KN"
+ "NE.DAB.TOTL.ZS"
+```
+</p>
+
+<p>
+### The search<sub>wdi</sub>() function
+</p>
+
+<p>
+The `search<sub>wdi</sub>()` function has the following arguments
+```julia
+function search<sub>wdi</sub>(data<sub>source</sub>, entry, regex)
+```
+</p>
+
+<p>
+The `data<sub>source`</sub> is either `countries` or `indicators`. The entry is
+one of the attributes (like name). The regex is the regular expression
+to search for.
+</p>
+
+<p>
+The search function uses two DataFrames `country<sub>cache`</sub> and
+`indicator<sub>cache`</sub> and searches through these. On the first search it
+will download the data from the World Bank website. This takes much
+longer for the larger indicators data. This only happens once per
+session. After the first use the data is cached.
+</p>
+
+<p>
+Note that the last argument to `search<sub>wdi</sub>()` is a regular expression
+denoted by `r"&#x2026;"` and an `i` at the end means that it is case
+insensitive.
+</p>
+
+<p>
+"countries" can be searched for "name", "region", "capital", "iso2c",
+"iso3c", "income", and "lending".
+</p>
+
+<p>
+"indicators" can be searched for "name", "description", "topics",
+"source<sub>database</sub>", and "source<sub>organization</sub>".
+</p>
+
+<p>
+### Examples of country searches
+</p>
+
+<p>
+```julia
+julia&gt; search<sub>wdi</sub>("countries","iso2c",r"TZ"i)
+1x9 DataFrame
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="right">Row #</td>
+<td class="left">capital</td>
+<td class="left">income</td>
+<td class="left">iso2c</td>
+<td class="left">iso3c</td>
+<td class="right">latitude</td>
+<td class="left">lending</td>
+<td class="right">longitude</td>
+<td class="left">name</td>
+<td class="left">region</td>
+</tr>
+
+<tr>
+<td class="right">1</td>
+<td class="left">Dodoma</td>
+<td class="left">Low income</td>
+<td class="left">TZ</td>
+<td class="left">TZA</td>
+<td class="right">-6.17486</td>
+<td class="left">IDA</td>
+<td class="right">35.7382</td>
+<td class="left">Tanzania</td>
+<td class="left">Sub-Saharan Africa (all income levels)</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>
+julia&gt; search<sub>wdi</sub>("countries","income",r"upper middle"i)
+&#x2026;
+</p>
+
+<p>
+julia&gt; search<sub>wdi</sub>("countries","region",r"Latin America"i)
+&#x2026;
+</p>
+
+<p>
+julia&gt; search<sub>wdi</sub>("countries","capital",r"<sup>Ka</sup>"i)
+3x9 DataFrame
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="right">Row #</td>
+<td class="left">capital</td>
+<td class="left">income</td>
+<td class="left">iso2c</td>
+<td class="left">iso3c</td>
+<td class="right">latitude</td>
+<td class="left">lending</td>
+<td class="right">longitude</td>
+<td class="left">name</td>
+<td class="left">region</td>
+</tr>
+
+<tr>
+<td class="right">1</td>
+<td class="left">Kabul</td>
+<td class="left">Low income</td>
+<td class="left">AF</td>
+<td class="left">AFG</td>
+<td class="right">34.5228</td>
+<td class="left">IDA</td>
+<td class="right">69.1761</td>
+<td class="left">Afghanistan</td>
+<td class="left">South Asia</td>
+</tr>
+
+<tr>
+<td class="right">2</td>
+<td class="left">Kathmandu</td>
+<td class="left">Low income</td>
+<td class="left">NP</td>
+<td class="left">NPL</td>
+<td class="right">27.6939</td>
+<td class="left">IDA</td>
+<td class="right">85.3157</td>
+<td class="left">Nepal</td>
+<td class="left">South Asia</td>
+</tr>
+
+<tr>
+<td class="right">3</td>
+<td class="left">Kampala</td>
+<td class="left">Low income</td>
+<td class="left">UG</td>
+<td class="left">UGA</td>
+<td class="right">0.314269</td>
+<td class="left">IDA</td>
+<td class="right">32.5729</td>
+<td class="left">Uganda</td>
+<td class="left">Sub-Saharan Africa (all income levels)</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+julia&gt; search<sub>wdi</sub>("countries","lending",r"IBRD"i)
+&#x2026;
+</p>
+
+<p>
+```
+</p>
+
+<p>
+### Examples of indicator searches
+</p>
+
+<p>
+```julia
+julia&gt; search<sub>wdi</sub>("indicators","name",r"gross national expenditure"i)
+&#x2026;
+julia&gt; search<sub>wdi</sub>("indicators","description",r"gross national expenditure"i)
+&#x2026;
+julia&gt; search<sub>wdi</sub>("indicators","source<sub>database</sub>",r"Sustainable"i)
+&#x2026;
+julia&gt; search<sub>wdi</sub>("indicators","source<sub>organization</sub>",r"Global Partnership"i)
+</p>
+
+<p>
+```
+</p>
+
+<p>
+## Tips and Tricks
+</p>
+
+<p>
+### Extracting country data from results
+</p>
+
+<p>
+```julia
+df=wdi("NY.GNP.PCAP.CD", ["US","BR"], 1980, 2012, true)
+indx=map(x-&gt; x=="US", df["iso2c"])
+indx=convert(DataArray{Bool,1}, indx)
+us<sub>gnp</sub>=df[indx,:]
+```
+</p>
+
+<p>
+### Plotting
+</p>
+
+<p>
+```julia
+using WorldBankData
+using Winston
+</p>
+
+<p>
+df=wdi("AG.LND.ARBL.HA.PC", "US", 1900, 2011)
+</p>
+
+<p>
+plot(df["year"], df["AG.LND.ARBL.HA.PC"])
+```
+</p>
+
+<p>
+### Empty/Missing results
+</p>
+
+<p>
+`wdi` will return an empty DataFrame without warning if there is no data:
+```julia
+julia&gt; dfAS=wdi("EN.ATM.CO2E.KT", "AS")
+download:
+<a href="http://api.worldbank.org/countries/AS/indicators/EN.ATM.CO2E.KT?date=1800:3000&per_page=25000&format=json">http://api.worldbank.org/countries/AS/indicators/EN.ATM.CO2E.KT?date=1800:3000&per_page=25000&format=json</a>
+0x4 DataFrame
+```
+</p>
+
+<p>
+It will return a DataFrame for the cases where it has data, i.e.
+</p>
+
+<p>
+```julia
+julia&gt; df=wdi("EN.ATM.CO2E.KT", ["AS","US"])
+download:
+<a href="http://api.worldbank.org/countries/AS/indicators/EN.ATM.CO2E.KT?date=1800:3000&per_page=25000&format=json">http://api.worldbank.org/countries/AS/indicators/EN.ATM.CO2E.KT?date=1800:3000&per_page=25000&format=json</a>
+download:
+<a href="http://api.worldbank.org/countries/US/indicators/EN.ATM.CO2E.KT?date=1800:3000&per_page=25000&format=json">http://api.worldbank.org/countries/US/indicators/EN.ATM.CO2E.KT?date=1800:3000&per_page=25000&format=json</a>
+51x4 DataFrame
+&#x2026;
+```
+</p>
+
+<p>
+### Cache
+</p>
+
+<p>
+The data in the World Bank database changes infrequently. Therefore it
+makes little sense to download it every time a script is run.
+</p>
+
+<p>
+However, sometimes there might sneak in some errors into the cached
+data. In such a case, simply delete the current cache.
+</p>
+
+<p>
+```julia
+julia&gt; clear<sub>cache</sub>()
+Cache has been cleared.
+```
+</p>
+
+<p>
+#### Metadata
+</p>
+
+<p>
+The `search<sub>wdi</sub>()` function internally caches the country and
+indicator metadata and therefore downloads the country and indicator
+data only once per session. Even that is usually not necessary. This
+data can easily be stored on local disk.
+</p>
+
+<p>
+Download and store the country and indicator information in csv files:
+</p>
+
+<p>
+```julia
+julia&gt; using WorldBankData, DataFrames
+julia&gt; writetable("country<sub>cache</sub>.csv",WorldBankData.get<sub>countries</sub>())
+julia&gt; writetable("indicator<sub>cache</sub>.csv", WorldBankData.get<sub>indicators</sub>())
+```
+</p>
+
+<p>
+These can be used in the script to set the WorldBankData cache
+variables `WorldBankData.country<sub>cache`</sub> and
+`WorldBankData.indicator<sub>cache`</sub> (which are initialized to `false`)
+using the `WorldBankData.set<sub>country</sub><sub>cache</sub>()` and
+`WorldBankData.set<sub>indicator</sub><sub>cache</sub>()` functions:
+</p>
+
+<p>
+```julia
+using WorldBankData
+using DataFrames
+WorldBankData.set<sub>country</sub><sub>cache</sub>(readtable("country<sub>cache</sub>.csv"))
+WorldBankData.set<sub>indicator</sub><sub>cache</sub>(readtable("indicator<sub>cache</sub>.csv"))
+```
+</p>
+
+<p>
+From then on the `search<sub>wdi</sub>()` function will use the data read from
+disk.
+</p>
+
+<p>
+#### Indicator data
+</p>
+
+<p>
+In a similar way the indicator data itself can be cached.
+</p>
+
+<p>
+```julia
+using WorldBankData
+using DataFrames
+</p>
+
+<p>
+function update<sub>us</sub><sub>gnp</sub><sub>per</sub><sub>cap</sub>()
+    df = wdi("NY.GNP.PCAP.CD", "US")
+    writetable("us<sub>gnp</sub>.csv",df)
+end
+df=readtable("us<sub>gnp</sub>.csv")
+```
+one then runs the `update<sub>us</sub><sub>gnp</sub><sub>per</sub><sub>cap</sub>()` function only when needed.
+</p>
+
+<p>
+## Build Status
+</p>
+
+<p>
+[![Build Status](<img src="https://travis-ci.org/4gh/WorldBankData.jl.png" alt="WorldBankData.jl.png" />)](<a href="https://travis-ci.org/4gh/WorldBankData.jl">https://travis-ci.org/4gh/WorldBankData.jl</a>)
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.7b)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
