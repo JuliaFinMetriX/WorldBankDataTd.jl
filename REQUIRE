@@ -1,5 +1,5 @@
-HTTPClient
-JSON
-DataArrays
-DataFrames
-Datetime
+julia 0.4-
+DataFrames 0.5.8-
+TimeData 0.4.0-
+HTTPClient 0.1.4-
+JSON 0.3.8-

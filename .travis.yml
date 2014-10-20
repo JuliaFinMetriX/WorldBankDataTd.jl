@@ -3,16 +3,25 @@ compiler:
   - clang
 notifications:
   email: false
-env:
-  matrix: 
-    - JULIAVERSION="juliareleases" 
-    - JULIAVERSION="julianightlies" 
 before_install:
   - sudo add-apt-repository ppa:staticfloat/julia-deps -y
-  - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
+  - sudo add-apt-repository ppa:staticfloat/julianightlies -y
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
 script:
-  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("WorldBankData"))`); Pkg.pin("WorldBankData"); Pkg.resolve()'
-  - julia ./test/runtests.jl 
+  - julia -e 'versioninfo()'
+  - julia -e 'Pkg.add("DataFrames")'
+  - julia -e 'Pkg.add("TimeData")'
+  - julia -e 'Pkg.update()'
+#  - julia -e 'Pkg.init(); Pkg.add("WorldBankData")'
+  - julia -e 'Pkg.init(); Pkg.clone("https://github.com/cgroll/WorldBankData.jl.git")'
+  - echo "Testing latest release:"
+  - julia -e 'Pkg.test("WorldBankData")'
+  - julia -e 'Pkg.checkout("WorldBankData")'
+  - echo "Testing master:"
+  - mkdir -p ~/.julia/WorldBankData
+  - cp -R ./* ~/.julia/WorldBankData/
+  - julia --code-coverage ./test/runtests.jl
 
+after_success:
+  - julia -e 'cd(Pkg.dir("WorldBankData")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
