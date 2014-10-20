@@ -1,8 +1,7 @@
 using Base.Test
 using WorldBankData
 
-my_tests = ["countries.jl",
-            "indicators.jl",
+my_tests = ["ctrs_indicators.jl",
             "utils.jl",
             "wdi.jl",
             "format.jl",

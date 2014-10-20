@@ -1,8 +1,53 @@
-module TestWDIIndicators
+module TestWDICountriesIndicators
 
 using Base.Test
+using DataFrames
 using WorldBankData
 
+## get_countries
+##--------------
+
+WorldBankData.get_countries()
+
+@test isa(WorldBankData.country_cache, DataFrame)
+@test size(WorldBankData.country_cache, 2) == 12
+
+## get_indicators
+##---------------
+
+WorldBankData.get_indicators()
+
+@test isa(WorldBankData.indicator_cache, DataFrame)
+@test size(WorldBankData.indicator_cache, 2) == 6
+
+## clear_cache
+##------------
+
+WorldBankData.clear_cache()
+@test WorldBankData.indicator_cache == false
+@test WorldBankData.country_cache == false
+
+## parse_country
+##--------------
+
+## parse example json data
+country_data = { { "total"=>4,"per_page"=>"25000","pages"=>1,"page"=>1 },
+                 {
+                    ["latitude"=>"42.5075","id"=>"AND","iso2Code"=>"AD","incomeLevel"=>["id"=>"NOC","value"=>"High income: nonOECD"],"adminregion"=>["id"=>"","value"=>""],"lendingType"=>["id"=>"LNX","value"=>"Not classified"],"region"=>["id"=>"ECS","value"=>"Europe & Central Asia (all income levels)"],"capitalCity"=>"Andorra la Vella","name"=>"Andorra","longitude"=>"1.5218"],
+                    ["latitude"=>"","id"=>"ARB","iso2Code"=>"1A","incomeLevel"=>["id"=>"NA","value"=>"Aggregates"],"adminregion"=>["id"=>"","value"=>""],"lendingType"=>["id"=>"","value"=>"Aggregates"],"region"=>["id"=>"NA","value"=>"Aggregates"],"capitalCity"=>"","name"=>"Arab World","longitude"=>""],
+                    ["latitude"=>"24.4764","id"=>"ARE","iso2Code"=>"AE","incomeLevel"=>["id"=>"NOC","value"=>"High income: nonOECD"],"adminregion"=>["id"=>"","value"=>""],"lendingType"=>["id"=>"LNX","value"=>"Not classified"],"region"=>["id"=>"MEA","value"=>"Middle East & North Africa (all income levels)"],"capitalCity"=>"Abu Dhabi","name"=>"United Arab Emirates","longitude"=>"54.3705"],
+                    ["latitude"=>"-34.6118","id"=>"ARG","iso2Code"=>"AR","incomeLevel"=>["id"=>"UMC","value"=>"Upper middle income"],"adminregion"=>["id"=>"LAC","value"=>"Latin America & Caribbean (developing only)"],"lendingType"=>["id"=>"IBD","value"=>"IBRD"],"region"=>["id"=>"LCN","value"=>"Latin America & Caribbean (all income levels)"],"capitalCity"=>"Buenos Aires","name"=>"Argentina","longitude"=>"-58.4173"]
+                 }
+               }
+df_country = WorldBankData.parse_country(country_data)
+
+@test df_country[:name] == UTF8String["Andorra", "Arab World", "United Arab Emirates", "Argentina"]
+@test df_country[:iso2c] == ASCIIString["AD", "1A", "AE", "AR"]
+
+## parse_indicator
+##----------------
+
+## parse example json data
 indicator_data = { { "total"=>5,"per_page"=>"25000","pages"=>1,"page"=>1 },
                    { ["sourceOrganization"=>"World Bank and International Energy Agency (IEA Statistics © OECD/IEA, http://www.iea.org/stats/index.asp).  ","id"=>"12.1_TD.LOSSES","topics"=>{},"sourceNote"=>"Transmission and distribution losses (%): Transmission and distribution (T&D) losses measure power lost in the transmission of (high-voltage) electricity from power generators to distributors and in the distribution of (medium- and low-voltage) electricity from distributors to end-users. T&D losses are represented as a percentage of gross electricity production. They include both technical and nontechnical (or commercial) losses. Included in the latter are unmetered, unbilled, and unpaid electricity, including theft, which could be significant in developing countries. Aggregate T&D system indicators may be dominated by factors other than losses. The location of primary energy resources (such as hydro lakes and coal seams) and large loads (cities and industries) may be more significant factors in T&D efficiency indicators than the losses or efficiency of the transmission system itself. Properly separating true losses (and hence the efficiency potential of transmission systems) from exogenous location and scale factors and nontechnical losses would require detailed studies of system-dynamic interactions and real operating requirements that are not practical for global tracking purposes.","name"=>"Transmission and distribution losses (%)","source"=>["id"=>"35","value"=>"Sustainable Energy for All"]],
                      ["sourceOrganization"=>"World Bank and International Energy Agency (IEA Statistics © OECD/IEA, http://www.iea.org/stats/index.asp).  ","id"=>"13.1_INDUSTRY.ENERGY.INTENSITY","topics"=>{},"sourceNote"=>"Energy intensity of industrial sector (MJ/\$2005):  A ratio between energy consumption in industry (including energy industry own use) and industry sector value added measured at purchasing power parity. Energy intensity is an indication of how much energy is used to produce one unit of economic output. Lower ratio indicates that less energy is used to produce one unit of output. ","name"=>"Energy intensity of industrial sector (MJ/\$2005)","source"=>["id"=>"35","value"=>"Sustainable Energy for All"]],
@@ -16,5 +61,6 @@ df_indicator = WorldBankData.parse_indicator(indicator_data)
 
 @test df_indicator[:indicator] == ASCIIString["12.1_TD.LOSSES", "13.1_INDUSTRY.ENERGY.INTENSITY", "14.1_AGR.ENERGY.INTENSITY", "15.1_OTHER.SECT.ENER.INTENS", "16.1_DECOMP.EFFICIENCY.IND"]
 @test df_indicator[:name] == UTF8String["Transmission and distribution losses (%)", "Energy intensity of industrial sector (MJ/\$2005)", "Energy intensity of agricultural sector (MJ/\$2005)", "Energy intensity of other sectors (MJ/\$2005)", "Divisia Decomposition Analysis - Energy Intensity component Index"]
+
 
 end

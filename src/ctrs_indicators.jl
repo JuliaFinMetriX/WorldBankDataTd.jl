@@ -5,6 +5,12 @@ function get_countries()
     country_cache
 end
 
+function clear_cache()
+    global country_cache = false
+    global indicator_cache = false
+    println("Cache has been cleared.")
+end
+
 function get_indicators()
     if indicator_cache == false
         set_indicator_cache(download_indicators())

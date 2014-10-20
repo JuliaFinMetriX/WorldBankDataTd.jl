@@ -1,10 +1,10 @@
 # examples:
 #   search_wdi("countries","name",r"united"i)
 #   search_wdi("indicators","description",r"gross national"i)
-function search_wdi(data::ASCIIString,entry::Symbol,regx::Regex)
+function search_wdi(data::ASCIIString, entry::Symbol, regx::Regex)
     data_opts = ["countries","indicators"]
     if !(data in data_opts)
-        error("unsupported data source:",data,". supported are:\n",data_opts)
+        error("unsupported data source:", data, ". supported are:\n",data_opts)
     end
     if data == "countries"
         return search_countries(entry,regx)
@@ -16,7 +16,7 @@ end
 
 function search_countries(entry::Symbol,regx::Regex)
     # test whether chosen column name is valid
-    entries = [ :iso3c,
+    entries = [:iso3c,
                :iso2c,
                :name,
                :region,
@@ -38,7 +38,7 @@ end
 
 function search_indicators(entry::Symbol,regx::Regex)
     # test whether chosen column name is valid
-    entries = [ :indicator,
+    entries = [:indicator,
                :name,
                :description,
                :source_database,
