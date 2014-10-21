@@ -1,4 +1,4 @@
-#+TITLE: WorldBankData.jl
+#+TITLE: Documentation
 #+OPTIONS: eval:never-export
 #+PROPERTY: exports both
 #+PROPERTY: results value
@@ -411,7 +411,3 @@ end
 df=readtable("us_gnp.csv")
 ```
 one then runs the `update_us_gnp_per_cap()` function only when needed.
-
-## Build Status
-
-[![Build Status](https://travis-ci.org/4gh/WorldBankData.jl.png)](https://travis-ci.org/4gh/WorldBankData.jl)
