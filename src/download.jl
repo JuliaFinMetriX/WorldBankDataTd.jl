@@ -2,8 +2,9 @@
 #   df=wdi("NY.GNP.PCAP.CD", ["US","BR"], 1980, 2012, true)
 function wdi(indicators::Union(ASCIIString,Array{ASCIIString,1}),
              countries::Union(ASCIIString,Array{ASCIIString,1}),
-             startyear::Integer=1800,endyear::Integer=3000,
-             extra::Bool=false)
+             startyear::Integer=1800,endyear::Integer=3000;
+             extra::Bool = false,
+             format::Type = AbstractTimedata)
     ## download multiple indicators / countries
     if countries == "all"
         countries = all_countries
@@ -29,9 +30,23 @@ function wdi(indicators::Union(ASCIIString,Array{ASCIIString,1}),
         indicators=[indicators]
     end
 
+    firstInd = true
     for ind in indicators
         dfn = wdi_download(ind, countries, startyear, endyear)
-        df = vcat(df,dfn)
+        if firstInd
+            df = vcat(df, dfn)
+            firstInd = false
+        else
+            nams = names(df)
+            nNams = length(nams)
+            if nNams > 4
+                allNamesExceptIndicator = nams[[[1:3], [5:end]]]
+            else
+                allNamesExceptIndicator = nams[1:3]
+            end
+            df = join(df, dfn, on = allNamesExceptIndicator,
+                      kind = :outer)
+        end
     end
 
     if extra
@@ -39,7 +54,17 @@ function wdi(indicators::Union(ASCIIString,Array{ASCIIString,1}),
         df = join(df, cntdat, on = :iso2c)
     end
 
-    df
+    ## sort data for plotting
+    sort!(df, cols = [:iso2c, :time])
+    
+    if format == AbstractTimedata
+    
+        dats = df[:time]
+        delete!(df, :time)
+        return Timedata(df, dats)
+    elseif format == DataFrame
+        return df
+    end
 end
 
 function wdi_download(indicator::ASCIIString,
@@ -88,9 +113,9 @@ function parse_wdi(indicator::ASCIIString, json, startyear::Integer,
 
     date = Date[formatDate(dat) for dat in date]
 
-    df = DataFrame(iso2c = country_id, country = country_name)
+    df = DataFrame(time = date, iso2c = country_id,
+                   country = country_name)
     df[symbol(indicator)] = value
-    df[:time] = date
 
     # filter missing/wrong data
     complete_cases!(df)

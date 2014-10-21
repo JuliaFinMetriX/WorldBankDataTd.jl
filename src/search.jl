@@ -73,6 +73,17 @@ function regex_match(da::DataArray{UTF8String,1},
     return res
 end
 
+function regex_match(da::DataArray{ASCIIString,1},
+                     regex::Regex)
+    toCheck = !isna(da)
+    nObs = size(da, 1)
+    res = DataArray(Bool, nObs)
+    res[isna(da)] = false
+    checkRes = map(x -> ismatch(regex,x), da[toCheck])
+    res[toCheck] = checkRes
+    return res
+end
+
 function df_match(df::AbstractDataFrame,
                   entry::Symbol,
                   regex::Regex)
