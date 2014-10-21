@@ -1,3 +1,4 @@
+using TimeData
 module WorldBankData
 
 using HTTPClient.HTTPC
@@ -5,6 +6,7 @@ using JSON
 using DataArrays
 using DataFrames
 using Base.Dates
+using TimeData
 
 export wdi, search_wdi
 

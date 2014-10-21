@@ -77,72 +77,73 @@ println("\n Running documentation tests\n")
 
 As part of the World Bank's Open Data initiative, the World Bank
 provides free access to their extensive database through their [[http://data.worldbank.org/developers/data-catalog-api][Data
-Catalog API]]. This package provides functions to interactively access
-and download World Bank data in Julia.
+Catalog API]]. This package uses this API to interactively access and
+download World Bank data in Julia.
 
-* Data types
-
-Any data can be accessed as one of three different data types
-associated with the following packages:
-- TimeData
-- DataFrames
-- TimeSeries
+Similar to the [[http://cran.r-project.org/web/packages/WDI/index.html][WDI R package]], data can be downloaded using function
+~wdi~. This function accepts indicators and countries as ~String~ or
+~Array{String, 1}~. Thereby, countries must be given as World Bank's
+iso2c code. Two additional ~Int~ inputs allow specifying beginning and
+end of the data period, while keyword argument ~extra~ attaches
+further country information like the capital, longitude, latitude,
+income range, etc. to each observation. Output will be of type
+~TimeData~ by default, but can be set to ~DataFrame~ through keyword
+argument ~format~.
 
 #+BEGIN_SRC julia :results value :tangle test/doctests.jl
-   using WorldBankData
+      using WorldBankData
+#+END_SRC
 
-   df = wdi("NY.GNP.PCAP.CD", ["US","BR"])
+#+RESULTS:
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+      
+   ## single indicator, single country
+   gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", "BR")
+
+   ## single indicator, multiple countries
+   gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
+
+   ## multiple indicators, single country
+   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                            ["BR"])
+
+   ## multiple indicators, multiple countries
+   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                            ["BR", "US", "DE"])
+
+   ## same, but as DataFrame
+   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                            ["BR", "US", "DE"],
+                            format = DataFrame)
+
+   ## multiple indicators, multiple countries, additional information
+   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                            ["BR", "US", "DE"], extra = true)
+
+   data[1:5, :]
 
 #+END_SRC
 
+#+RESULTS:
+|        idx | iso2c | country | NY.GNP.PCAP.CD |   SP.DYN.LE00.IN | iso3c | name   | region                                        | regionId | capital  | longitude | latitude | income              | incomeId | lending | lendingId |
+| 1960-12-31 | BR    | Brazil  |             NA | 54.6921463414634 | BRA   | Brazil | Latin America & Caribbean (all income levels) | LCN      | Brasilia |  -47.9292 | -15.7801 | Upper middle income | UMC      | IBRD    | IBD       |
+| 1961-12-31 | BR    | Brazil  |             NA | 55.1696341463415 | BRA   | Brazil | Latin America & Caribbean (all income levels) | LCN      | Brasilia |  -47.9292 | -15.7801 | Upper middle income | UMC      | IBRD    | IBD       |
+| 1962-12-31 | BR    | Brazil  |            230 | 55.6330975609756 | BRA   | Brazil | Latin America & Caribbean (all income levels) | LCN      | Brasilia |  -47.9292 | -15.7801 | Upper middle income | UMC      | IBRD    | IBD       |
+| 1963-12-31 | BR    | Brazil  |            250 |            56.08 | BRA   | Brazil | Latin America & Caribbean (all income levels) | LCN      | Brasilia |  -47.9292 | -15.7801 | Upper middle income | UMC      | IBRD    | IBD       |
+| 1964-12-31 | BR    | Brazil  |            270 | 56.5102926829268 | BRA   | Brazil | Latin America & Caribbean (all income levels) | LCN      | Brasilia |  -47.9292 | -15.7801 | Upper middle income | UMC      | IBRD    | IBD       |
 
-## Installation
+** Searching
 
-```julia
-julia> Pkg.add("WorldBankData")
-```
+The most convenient way to explore indicators probably still is the
+[[http://data.worldbank.org/indicator][World Bank webpage]], where you can easily use the search functionality
+to find an indicator. Once you found the indicator that you are
+looking for, you can read off the indicator shortcut name (e.g.
+SP.DYN.LE00.IN) from the URL of the indicator webpage.
 
-## Basic Examples
+Alternatively, however, this package also contains functionality to
+interactively search the database from Julia itself.
 
-Obtain a DataFrame with the gross national income per capita for the
-US and Brazil:
-
-```julia
-using WorldBankData
-df=wdi("NY.GNP.PCAP.CD", ["US","BR"])
-```
-
-### Multiple countries and indicators
-
-```julia
-using WorldBankData
-df=wdi(["NY.GNP.PCAP.CD","AG.LND.ARBL.HA.PC"], ["US","BR"], 1980, 2008, true)
-```
-
-This returns the GNI per capita and the arable land (hectares per
-person) for the time range 1980-2008 for the US and Brazil. It also
-attaches extra country information (the `true` argument) like the
-capital, longitude, latitude, income range, etc.
-
-## Optional arguments
-
-The `wdi` function has the following arguments:
-
-```julia
-wdi(indicators, countries, startyear, endyear, extra)
-```
-
-It needs a minimum of two arguments: the indicators (from the WDI
-database) and the countries (ISO two letter country codes). The rest
-are optional.
-
-extra: If `extra=true`, `wdi()` attaches extra country data (like the
-capital) to the returned DataFrame.
-
-## Searching
-
-The most convenient way to explore the database is probably through a
-web browser at [data.worldbank.org](http://data.worldbank.org).
 
 However, the module does provide a search function: `search_wdi()`.
 
@@ -151,50 +152,66 @@ One can search for "countries" or "indicators" data.
 ### Example for country search by name
 
 ```julia
-julia> res = search_wdi("countries", :name, r"united"i)
-julia> res[:name]
-3-element DataArray{UTF8String,1}:
- "United Arab Emirates"
- "United Kingdom"
- "United States"
-julia> res[:iso2c]
-3-element DataArray{ASCIIString,1}:
- "AE"
- "GB"
- "US"
-```
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+res = search_wdi("countries", :name, r"united"i)
+res[:name]
+#+END_SRC
+
+#+RESULTS:
+| United Arab Emirates |
+| United Kingdom       |
+| United States        |
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+res[:iso2c]
+#+END_SRC
+
+#+RESULTS:
+| AE |
+| GB |
+| US |
 
 ### Example for indicator search by description
 
 ```julia
-julia> res = search_wdi("indicators", :description, r"gross national expenditure"i)
-6x5 DataFrame
-|-------|---------------------|------------|---------|
-| Col # | Name                | Type       | Missing |
-| 1     | description         | UTF8String | 0       |
-| 2     | indicator           | UTF8String | 0       |
-| 3     | name                | UTF8String | 0       |
-| 4     | source_database     | UTF8String | 0       |
-| 5     | source_organization | UTF8String | 0       |
+julia> 
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+res = search_wdi("indicators", :description, r"gross national expenditure"i)
+names(res)
+#+END_SRC
 
-julia> res[:name]
-6-element DataArray{UTF8String,1}:
- "Gross national expenditure deflator (base year varies by country)"
- "Gross national expenditure (current US\$)"
- "Gross national expenditure (current LCU)"
- "Gross national expenditure (constant 2005 US\$)"
- "Gross national expenditure (constant LCU)"
- "Gross national expenditure (% of GDP)"
+#+RESULTS:
+| indicator           |
+| name                |
+| description         |
+| source_database     |
+| source_databaseId   |
+| source_organization |
 
-julia> res[:indicator]
-6-element DataArray{UTF8String,1}:
- "NE.DAB.DEFL.ZS"
- "NE.DAB.TOTL.CD"
- "NE.DAB.TOTL.CN"
- "NE.DAB.TOTL.KD"
- "NE.DAB.TOTL.KN"
- "NE.DAB.TOTL.ZS"
-```
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+res[:name]
+#+END_SRC
+
+#+RESULTS:
+| Gross national expenditure deflator (base year varies by country) |
+| Gross national expenditure (current US$)                          |
+| Gross national expenditure (current LCU)                          |
+| Gross national expenditure (constant 2005 US$)                    |
+| Gross national expenditure (constant LCU)                         |
+| Gross national expenditure (% of GDP)                             |
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+res[:indicator]
+#+END_SRC
+
+#+RESULTS:
+| NE.DAB.DEFL.ZS |
+| NE.DAB.TOTL.CD |
+| NE.DAB.TOTL.CN |
+| NE.DAB.TOTL.KD |
+| NE.DAB.TOTL.KN |
+| NE.DAB.TOTL.ZS |
+
 
 ### The search_wdi() function
 
@@ -226,26 +243,52 @@ insensitive.
 ### Examples of country searches
 
 ```julia
-julia> search_wdi("countries","iso2c",r"TZ"i)
-1x9 DataFrame
-|-------|---------|------------|-------|-------|----------|---------|-----------|----------|----------------------------------------|
-| Row # | capital | income     | iso2c | iso3c | latitude | lending | longitude | name     | region                                 |
-| 1     | Dodoma  | Low income | TZ    | TZA   | -6.17486 | IDA     | 35.7382   | Tanzania | Sub-Saharan Africa (all income levels) |
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+search_wdi("countries", :iso2c, r"TZ"i)
+#+END_SRC
 
+#+RESULTS:
+| iso3c | iso2c | name     | region                                 | regionId | capital | longitude | latitude | income     | incomeId | lending | lendingId |
+| TZA   | TZ    | Tanzania | Sub-Saharan Africa (all income levels) | SSF      | Dodoma  |   35.7382 | -6.17486 | Low income | LIC      | IDA     | IDX       |
 
-julia> search_wdi("countries","income",r"upper middle"i)
+julia> 
 ...
 
-julia> search_wdi("countries","region",r"Latin America"i)
-...
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+search_wdi("countries", :income, r"upper middle"i)[1:5, :]
+#+END_SRC
 
-julia> search_wdi("countries","capital",r"^Ka"i)
-3x9 DataFrame
-|-------|-----------|------------|-------|-------|----------|---------|-----------|-------------|----------------------------------------|
-| Row # | capital   | income     | iso2c | iso3c | latitude | lending | longitude | name        | region                                 |
-| 1     | Kabul     | Low income | AF    | AFG   | 34.5228  | IDA     | 69.1761   | Afghanistan | South Asia                             |
-| 2     | Kathmandu | Low income | NP    | NPL   | 27.6939  | IDA     | 85.3157   | Nepal       | South Asia                             |
-| 3     | Kampala   | Low income | UG    | UGA   | 0.314269 | IDA     | 32.5729   | Uganda      | Sub-Saharan Africa (all income levels) |
+#+RESULTS:
+| iso3c | iso2c | name           | region                                        | regionId | capital      | longitude | latitude | income              | incomeId | lending        | lendingId |
+| AGO   | AO    | Angola         | Sub-Saharan Africa (all income levels)        | SSF      | Luanda       |    13.242 | -8.81155 | Upper middle income | UMC      | IBRD           | IBD       |
+| ALB   | AL    | Albania        | Europe & Central Asia (all income levels)     | ECS      | Tirane       |   19.8172 |  41.3317 | Upper middle income | UMC      | IBRD           | IBD       |
+| ARG   | AR    | Argentina      | Latin America & Caribbean (all income levels) | LCN      | Buenos Aires |  -58.4173 | -34.6118 | Upper middle income | UMC      | IBRD           | IBD       |
+| ASM   | AS    | American Samoa | East Asia & Pacific (all income levels)       | EAS      | Pago Pago    |  -170.691 | -14.2846 | Upper middle income | UMC      | Not classified | LNX       |
+| AZE   | AZ    | Azerbaijan     | Europe & Central Asia (all income levels)     | ECS      | Baku         |   49.8932 |  40.3834 | Upper middle income | UMC      | IBRD           | IBD       |
+
+julia> 
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+search_wdi("countries", :region, r"Latin America"i)[1:5, :]
+#+END_SRC
+
+#+RESULTS:
+| iso3c | iso2c | name                | region                                        | regionId | capital      | longitude | latitude | income               | incomeId | lending        | lendingId |
+| ABW   | AW    | Aruba               | Latin America & Caribbean (all income levels) | LCN      | Oranjestad   |  -70.0167 |  12.5167 | High income: nonOECD | NOC      | Not classified | LNX       |
+| ARG   | AR    | Argentina           | Latin America & Caribbean (all income levels) | LCN      | Buenos Aires |  -58.4173 | -34.6118 | Upper middle income  | UMC      | IBRD           | IBD       |
+| ATG   | AG    | Antigua and Barbuda | Latin America & Caribbean (all income levels) | LCN      | Saint John's |  -61.8456 |  17.1175 | High income: nonOECD | NOC      | IBRD           | IBD       |
+| BHS   | BS    | Bahamas, The        | Latin America & Caribbean (all income levels) | LCN      | Nassau       |   -77.339 |  25.0661 | High income: nonOECD | NOC      | Not classified | LNX       |
+| BLZ   | BZ    | Belize              | Latin America & Caribbean (all income levels) | LCN      | Belmopan     |  -88.7713 |  17.2534 | Upper middle income  | UMC      | IBRD           | IBD       |
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+   search_wdi("countries", :capital, r"^Ka"i)
+#+END_SRC
+
+#+RESULTS:
+| iso3c | iso2c | name        | region                                 | regionId | capital   | longitude | latitude | income     | incomeId | lending | lendingId |
+| AFG   | AF    | Afghanistan | South Asia                             | SAS      | Kabul     |   69.1761 |  34.5228 | Low income | LIC      | IDA     | IDX       |
+| NPL   | NP    | Nepal       | South Asia                             | SAS      | Kathmandu |   85.3157 |  27.6939 | Low income | LIC      | IDA     | IDX       |
+| UGA   | UG    | Uganda      | Sub-Saharan Africa (all income levels) | SSF      | Kampala   |   32.5729 | 0.314269 | Low income | LIC      | IDA     | IDX       |
+
 
 julia> search_wdi("countries","lending",r"IBRD"i)
 ...
