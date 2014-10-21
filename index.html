@@ -165,48 +165,6 @@ for the JavaScript code in this tag.
  }
 /*]]>*///-->
 </script>
-<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js"></script>
-<script type="text/javascript">
-<!--/*--><![CDATA[/*><!--*/
-    MathJax.Hub.Config({
-        // Only one of the two following lines, depending on user settings
-        // First allows browser-native MathML display, second forces HTML/CSS
-        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
-            jax: ["input/TeX", "output/HTML-CSS"],
-        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
-                     "TeX/noUndefined.js"],
-        tex2jax: {
-            inlineMath: [ ["\\(","\\)"] ],
-            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
-            skipTags: ["script","noscript","style","textarea","pre","code"],
-            ignoreClass: "tex2jax_ignore",
-            processEscapes: false,
-            processEnvironments: true,
-            preview: "TeX"
-        },
-        showProcessingMessages: true,
-        displayAlign: "center",
-        displayIndent: "2em",
-
-        "HTML-CSS": {
-             scale: 100,
-             availableFonts: ["STIX","TeX"],
-             preferredFont: "TeX",
-             webFont: "TeX",
-             imageFont: "TeX",
-             showMathMenu: true,
-        },
-        MMLorHTML: {
-             prefer: {
-                 MSIE:    "MML",
-                 Firefox: "MML",
-                 Opera:   "HTML",
-                 other:   "HTML"
-             }
-        }
-    });
-/*]]>*///-->
-</script>
 </head>
 <body>
 <div id="content">
@@ -215,7 +173,11 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">1. World Bank Data in Julia</a></li>
+<li><a href="#sec-1">1. World Bank Data in Julia</a>
+<ul>
+<li><a href="#sec-1-1">1.1. Searching</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -224,101 +186,229 @@ for the JavaScript code in this tag.
 <h2 id="sec-1"><span class="section-number-2">1</span> World Bank Data in Julia</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-The World Bank provides free access to data about development at
-[data.worldbank.org](<a href="http://data.worldbank.org">http://data.worldbank.org</a>).
+As part of the World Bank's Open Data initiative, the World Bank
+provides free access to their extensive database through their <a href="http://data.worldbank.org/developers/data-catalog-api">Data
+Catalog API</a>. This package uses this API to interactively access and
+download World Bank data in Julia.
 </p>
 
 <p>
-The primary collection of development indicators is called World
-Development Indicators (WDI).
+Similar to the <a href="http://cran.r-project.org/web/packages/WDI/index.html">WDI R package</a>, data can be downloaded using function
+<code>wdi</code>. This function accepts indicators and countries as <code>String</code> or
+<code>Array{String, 1}</code>. Thereby, countries must be given as World Bank's
+iso2c code. Two additional <code>Int</code> inputs allow specifying beginning and
+end of the data period, while keyword argument <code>extra</code> attaches
+further country information like the capital, longitude, latitude,
+income range, etc. to each observation. Output will be of type
+<code>TimeData</code> by default, but can be set to <code>DataFrame</code> through keyword
+argument <code>format</code>.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-julia">using WorldBankData
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre class="src src-julia">## single indicator, single country
+gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", "BR")
+
+## single indicator, multiple countries
+gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
+
+## multiple indicators, single country
+data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                         ["BR"])
+
+## multiple indicators, multiple countries
+data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                         ["BR", "US", "DE"])
+
+## same, but as DataFrame
+data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                         ["BR", "US", "DE"],
+                         format = DataFrame)
+
+## multiple indicators, multiple countries, additional information
+data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+                         ["BR", "US", "DE"], extra = true)
+
+data[1:5, :]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="right">idx</td>
+<td class="left">iso2c</td>
+<td class="left">country</td>
+<td class="right">NY.GNP.PCAP.CD</td>
+<td class="right">SP.DYN.LE00.IN</td>
+<td class="left">iso3c</td>
+<td class="left">name</td>
+<td class="left">region</td>
+<td class="left">regionId</td>
+<td class="left">capital</td>
+<td class="right">longitude</td>
+<td class="right">latitude</td>
+<td class="left">income</td>
+<td class="left">incomeId</td>
+<td class="left">lending</td>
+<td class="left">lendingId</td>
+</tr>
+
+<tr>
+<td class="right">1960-12-31</td>
+<td class="left">BR</td>
+<td class="left">Brazil</td>
+<td class="right">NA</td>
+<td class="right">54.6921463414634</td>
+<td class="left">BRA</td>
+<td class="left">Brazil</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Brasilia</td>
+<td class="right">-47.9292</td>
+<td class="right">-15.7801</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="right">1961-12-31</td>
+<td class="left">BR</td>
+<td class="left">Brazil</td>
+<td class="right">NA</td>
+<td class="right">55.1696341463415</td>
+<td class="left">BRA</td>
+<td class="left">Brazil</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Brasilia</td>
+<td class="right">-47.9292</td>
+<td class="right">-15.7801</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="right">1962-12-31</td>
+<td class="left">BR</td>
+<td class="left">Brazil</td>
+<td class="right">230</td>
+<td class="right">55.6330975609756</td>
+<td class="left">BRA</td>
+<td class="left">Brazil</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Brasilia</td>
+<td class="right">-47.9292</td>
+<td class="right">-15.7801</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="right">1963-12-31</td>
+<td class="left">BR</td>
+<td class="left">Brazil</td>
+<td class="right">250</td>
+<td class="right">56.08</td>
+<td class="left">BRA</td>
+<td class="left">Brazil</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Brasilia</td>
+<td class="right">-47.9292</td>
+<td class="right">-15.7801</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="right">1964-12-31</td>
+<td class="left">BR</td>
+<td class="left">Brazil</td>
+<td class="right">270</td>
+<td class="right">56.5102926829268</td>
+<td class="left">BRA</td>
+<td class="left">Brazil</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Brasilia</td>
+<td class="right">-47.9292</td>
+<td class="right">-15.7801</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div id="outline-container-sec-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Searching</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+The most convenient way to explore indicators probably still is the
+<a href="http://data.worldbank.org/indicator">World Bank webpage</a>, where you can easily use the search functionality
+to find an indicator. Once you found the indicator that you are
+looking for, you can read off the indicator shortcut name (e.g.
+SP.DYN.LE00.IN) from the URL of the indicator webpage.
 </p>
 
 <p>
-This module has functions to easily access and download the data.
+Alternatively, however, this package also contains functionality to
+interactively search the database from Julia itself.
 </p>
 
-<p>
-It follows roughly the
-[R WDI package](<a href="http://cran.r-project.org/web/packages/WDI/index.html">http://cran.r-project.org/web/packages/WDI/index.html</a>).
-</p>
-
-<p>
-## Installation
-</p>
-
-<p>
-```julia
-julia&gt; Pkg.add("WorldBankData")
-```
-</p>
-
-<p>
-## Basic Examples
-</p>
-
-<p>
-Obtain a DataFrame with the gross national income per capita for the
-US and Brazil:
-</p>
-
-<p>
-```julia
-using WorldBankData
-df=wdi("NY.GNP.PCAP.CD", ["US","BR"])
-```
-</p>
-
-<p>
-### Multiple countries and indicators
-</p>
-
-<p>
-```julia
-using WorldBankData
-df=wdi(["NY.GNP.PCAP.CD","AG.LND.ARBL.HA.PC"], ["US","BR"], 1980, 2008, true)
-```
-</p>
-
-<p>
-This returns the GNI per capita and the arable land (hectares per
-person) for the time range 1980-2008 for the US and Brazil. It also
-attaches extra country information (the `true` argument) like the
-capital, longitude, latitude, income range, etc.
-</p>
-
-<p>
-## Optional arguments
-</p>
-
-<p>
-The `wdi` function has the following arguments:
-</p>
-
-<p>
-```julia
-wdi(indicators, countries, startyear, endyear, extra)
-```
-</p>
-
-<p>
-It needs a minimum of two arguments: the indicators (from the WDI
-database) and the countries (ISO two letter country codes). The rest
-are optional.
-</p>
-
-<p>
-extra: If `extra=true`, `wdi()` attaches extra country data (like the
-capital) to the returned DataFrame.
-</p>
-
-<p>
-## Searching
-</p>
-
-<p>
-The most convenient way to explore the database is probably through a
-web browser at [data.worldbank.org](<a href="http://data.worldbank.org">http://data.worldbank.org</a>).
-</p>
 
 <p>
 However, the module does provide a search function: `search<sub>wdi</sub>()`.
@@ -334,19 +424,61 @@ One can search for "countries" or "indicators" data.
 
 <p>
 ```julia
-julia&gt; res = search<sub>wdi</sub>("countries", :name, r"united"i)
-julia&gt; res[:name]
-3-element DataArray{UTF8String,1}:
- "United Arab Emirates"
- "United Kingdom"
- "United States"
-julia&gt; res[:iso2c]
-3-element DataArray{ASCIIString,1}:
- "AE"
- "GB"
- "US"
-```
 </p>
+<div class="org-src-container">
+
+<pre class="src src-julia">res = search_wdi("countries", :name, r"united"i)
+res[:name]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left">United Arab Emirates</td>
+</tr>
+
+<tr>
+<td class="left">United Kingdom</td>
+</tr>
+
+<tr>
+<td class="left">United States</td>
+</tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+
+<pre class="src src-julia">res[:iso2c]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left">AE</td>
+</tr>
+
+<tr>
+<td class="left">GB</td>
+</tr>
+
+<tr>
+<td class="left">US</td>
+</tr>
+</tbody>
+</table>
 
 <p>
 ### Example for indicator search by description
@@ -354,88 +486,126 @@ julia&gt; res[:iso2c]
 
 <p>
 ```julia
-julia&gt; res = search<sub>wdi</sub>("indicators", :description, r"gross national expenditure"i)
-6x5 DataFrame
+julia&gt; 
 </p>
+<div class="org-src-container">
+
+<pre class="src src-julia">res = search_wdi("indicators", :description, r"gross national expenditure"i)
+names(res)
+</pre>
+</div>
+
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
-<col  class="right" />
-
 <col  class="left" />
-
-<col  class="left" />
-
-<col  class="right" />
 </colgroup>
 <tbody>
 <tr>
-<td class="right">Col #</td>
-<td class="left">Name</td>
-<td class="left">Type</td>
-<td class="right">Missing</td>
-</tr>
-
-<tr>
-<td class="right">1</td>
-<td class="left">description</td>
-<td class="left">UTF8String</td>
-<td class="right">0</td>
-</tr>
-
-<tr>
-<td class="right">2</td>
 <td class="left">indicator</td>
-<td class="left">UTF8String</td>
-<td class="right">0</td>
 </tr>
 
 <tr>
-<td class="right">3</td>
 <td class="left">name</td>
-<td class="left">UTF8String</td>
-<td class="right">0</td>
 </tr>
 
 <tr>
-<td class="right">4</td>
+<td class="left">description</td>
+</tr>
+
+<tr>
 <td class="left">source<sub>database</sub></td>
-<td class="left">UTF8String</td>
-<td class="right">0</td>
 </tr>
 
 <tr>
-<td class="right">5</td>
+<td class="left">source<sub>databaseId</sub></td>
+</tr>
+
+<tr>
 <td class="left">source<sub>organization</sub></td>
-<td class="left">UTF8String</td>
-<td class="right">0</td>
 </tr>
 </tbody>
 </table>
 
-<p>
-julia&gt; res[:name]
-6-element DataArray{UTF8String,1}:
- "Gross national expenditure deflator (base year varies by country)"
- "Gross national expenditure (current US\\()"
- "Gross national expenditure (current LCU)"
- "Gross national expenditure (constant 2005 US\\))"
- "Gross national expenditure (constant LCU)"
- "Gross national expenditure (% of GDP)"
-</p>
+<div class="org-src-container">
 
-<p>
-julia&gt; res[:indicator]
-6-element DataArray{UTF8String,1}:
- "NE.DAB.DEFL.ZS"
- "NE.DAB.TOTL.CD"
- "NE.DAB.TOTL.CN"
- "NE.DAB.TOTL.KD"
- "NE.DAB.TOTL.KN"
- "NE.DAB.TOTL.ZS"
-```
-</p>
+<pre class="src src-julia">res[:name]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left">Gross national expenditure deflator (base year varies by country)</td>
+</tr>
+
+<tr>
+<td class="left">Gross national expenditure (current US$)</td>
+</tr>
+
+<tr>
+<td class="left">Gross national expenditure (current LCU)</td>
+</tr>
+
+<tr>
+<td class="left">Gross national expenditure (constant 2005 US$)</td>
+</tr>
+
+<tr>
+<td class="left">Gross national expenditure (constant LCU)</td>
+</tr>
+
+<tr>
+<td class="left">Gross national expenditure (% of GDP)</td>
+</tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+
+<pre class="src src-julia">res[:indicator]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left">NE.DAB.DEFL.ZS</td>
+</tr>
+
+<tr>
+<td class="left">NE.DAB.TOTL.CD</td>
+</tr>
+
+<tr>
+<td class="left">NE.DAB.TOTL.CN</td>
+</tr>
+
+<tr>
+<td class="left">NE.DAB.TOTL.KD</td>
+</tr>
+
+<tr>
+<td class="left">NE.DAB.TOTL.KN</td>
+</tr>
+
+<tr>
+<td class="left">NE.DAB.TOTL.ZS</td>
+</tr>
+</tbody>
+</table>
+
 
 <p>
 ### The search<sub>wdi</sub>() function
@@ -484,28 +654,36 @@ insensitive.
 
 <p>
 ```julia
-julia&gt; search<sub>wdi</sub>("countries","iso2c",r"TZ"i)
-1x9 DataFrame
 </p>
+<div class="org-src-container">
+
+<pre class="src src-julia">search_wdi("countries", :iso2c, r"TZ"i)
+</pre>
+</div>
+
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
 <col  class="right" />
 
 <col  class="left" />
 
 <col  class="left" />
-
-<col  class="left" />
-
-<col  class="left" />
-
-<col  class="right" />
-
-<col  class="left" />
-
-<col  class="right" />
 
 <col  class="left" />
 
@@ -513,67 +691,71 @@ julia&gt; search<sub>wdi</sub>("countries","iso2c",r"TZ"i)
 </colgroup>
 <tbody>
 <tr>
-<td class="right">Row #</td>
-<td class="left">capital</td>
-<td class="left">income</td>
-<td class="left">iso2c</td>
 <td class="left">iso3c</td>
-<td class="right">latitude</td>
-<td class="left">lending</td>
-<td class="right">longitude</td>
+<td class="left">iso2c</td>
 <td class="left">name</td>
 <td class="left">region</td>
+<td class="left">regionId</td>
+<td class="left">capital</td>
+<td class="right">longitude</td>
+<td class="right">latitude</td>
+<td class="left">income</td>
+<td class="left">incomeId</td>
+<td class="left">lending</td>
+<td class="left">lendingId</td>
 </tr>
 
 <tr>
-<td class="right">1</td>
-<td class="left">Dodoma</td>
-<td class="left">Low income</td>
-<td class="left">TZ</td>
 <td class="left">TZA</td>
-<td class="right">-6.17486</td>
-<td class="left">IDA</td>
-<td class="right">35.7382</td>
+<td class="left">TZ</td>
 <td class="left">Tanzania</td>
 <td class="left">Sub-Saharan Africa (all income levels)</td>
+<td class="left">SSF</td>
+<td class="left">Dodoma</td>
+<td class="right">35.7382</td>
+<td class="right">-6.17486</td>
+<td class="left">Low income</td>
+<td class="left">LIC</td>
+<td class="left">IDA</td>
+<td class="left">IDX</td>
 </tr>
 </tbody>
 </table>
 
-
 <p>
-julia&gt; search<sub>wdi</sub>("countries","income",r"upper middle"i)
+julia&gt; 
 &#x2026;
 </p>
 
-<p>
-julia&gt; search<sub>wdi</sub>("countries","region",r"Latin America"i)
-&#x2026;
-</p>
+<div class="org-src-container">
 
-<p>
-julia&gt; search<sub>wdi</sub>("countries","capital",r"<sup>Ka</sup>"i)
-3x9 DataFrame
-</p>
+<pre class="src src-julia">search_wdi("countries", :income, r"upper middle"i)[1:5, :]
+</pre>
+</div>
+
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
 <col  class="right" />
 
 <col  class="left" />
 
 <col  class="left" />
-
-<col  class="left" />
-
-<col  class="left" />
-
-<col  class="right" />
-
-<col  class="left" />
-
-<col  class="right" />
 
 <col  class="left" />
 
@@ -581,58 +763,324 @@ julia&gt; search<sub>wdi</sub>("countries","capital",r"<sup>Ka</sup>"i)
 </colgroup>
 <tbody>
 <tr>
-<td class="right">Row #</td>
-<td class="left">capital</td>
-<td class="left">income</td>
-<td class="left">iso2c</td>
 <td class="left">iso3c</td>
-<td class="right">latitude</td>
-<td class="left">lending</td>
-<td class="right">longitude</td>
+<td class="left">iso2c</td>
 <td class="left">name</td>
 <td class="left">region</td>
+<td class="left">regionId</td>
+<td class="left">capital</td>
+<td class="right">longitude</td>
+<td class="right">latitude</td>
+<td class="left">income</td>
+<td class="left">incomeId</td>
+<td class="left">lending</td>
+<td class="left">lendingId</td>
 </tr>
 
 <tr>
-<td class="right">1</td>
-<td class="left">Kabul</td>
-<td class="left">Low income</td>
-<td class="left">AF</td>
-<td class="left">AFG</td>
-<td class="right">34.5228</td>
-<td class="left">IDA</td>
-<td class="right">69.1761</td>
-<td class="left">Afghanistan</td>
-<td class="left">South Asia</td>
-</tr>
-
-<tr>
-<td class="right">2</td>
-<td class="left">Kathmandu</td>
-<td class="left">Low income</td>
-<td class="left">NP</td>
-<td class="left">NPL</td>
-<td class="right">27.6939</td>
-<td class="left">IDA</td>
-<td class="right">85.3157</td>
-<td class="left">Nepal</td>
-<td class="left">South Asia</td>
-</tr>
-
-<tr>
-<td class="right">3</td>
-<td class="left">Kampala</td>
-<td class="left">Low income</td>
-<td class="left">UG</td>
-<td class="left">UGA</td>
-<td class="right">0.314269</td>
-<td class="left">IDA</td>
-<td class="right">32.5729</td>
-<td class="left">Uganda</td>
+<td class="left">AGO</td>
+<td class="left">AO</td>
+<td class="left">Angola</td>
 <td class="left">Sub-Saharan Africa (all income levels)</td>
+<td class="left">SSF</td>
+<td class="left">Luanda</td>
+<td class="right">13.242</td>
+<td class="right">-8.81155</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="left">ALB</td>
+<td class="left">AL</td>
+<td class="left">Albania</td>
+<td class="left">Europe &amp; Central Asia (all income levels)</td>
+<td class="left">ECS</td>
+<td class="left">Tirane</td>
+<td class="right">19.8172</td>
+<td class="right">41.3317</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="left">ARG</td>
+<td class="left">AR</td>
+<td class="left">Argentina</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Buenos Aires</td>
+<td class="right">-58.4173</td>
+<td class="right">-34.6118</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="left">ASM</td>
+<td class="left">AS</td>
+<td class="left">American Samoa</td>
+<td class="left">East Asia &amp; Pacific (all income levels)</td>
+<td class="left">EAS</td>
+<td class="left">Pago Pago</td>
+<td class="right">-170.691</td>
+<td class="right">-14.2846</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">Not classified</td>
+<td class="left">LNX</td>
+</tr>
+
+<tr>
+<td class="left">AZE</td>
+<td class="left">AZ</td>
+<td class="left">Azerbaijan</td>
+<td class="left">Europe &amp; Central Asia (all income levels)</td>
+<td class="left">ECS</td>
+<td class="left">Baku</td>
+<td class="right">49.8932</td>
+<td class="right">40.3834</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
 </tr>
 </tbody>
 </table>
+
+<p>
+julia&gt; 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-julia">search_wdi("countries", :region, r"Latin America"i)[1:5, :]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left">iso3c</td>
+<td class="left">iso2c</td>
+<td class="left">name</td>
+<td class="left">region</td>
+<td class="left">regionId</td>
+<td class="left">capital</td>
+<td class="right">longitude</td>
+<td class="right">latitude</td>
+<td class="left">income</td>
+<td class="left">incomeId</td>
+<td class="left">lending</td>
+<td class="left">lendingId</td>
+</tr>
+
+<tr>
+<td class="left">ABW</td>
+<td class="left">AW</td>
+<td class="left">Aruba</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Oranjestad</td>
+<td class="right">-70.0167</td>
+<td class="right">12.5167</td>
+<td class="left">High income: nonOECD</td>
+<td class="left">NOC</td>
+<td class="left">Not classified</td>
+<td class="left">LNX</td>
+</tr>
+
+<tr>
+<td class="left">ARG</td>
+<td class="left">AR</td>
+<td class="left">Argentina</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Buenos Aires</td>
+<td class="right">-58.4173</td>
+<td class="right">-34.6118</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="left">ATG</td>
+<td class="left">AG</td>
+<td class="left">Antigua and Barbuda</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Saint John's</td>
+<td class="right">-61.8456</td>
+<td class="right">17.1175</td>
+<td class="left">High income: nonOECD</td>
+<td class="left">NOC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+
+<tr>
+<td class="left">BHS</td>
+<td class="left">BS</td>
+<td class="left">Bahamas, The</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Nassau</td>
+<td class="right">-77.339</td>
+<td class="right">25.0661</td>
+<td class="left">High income: nonOECD</td>
+<td class="left">NOC</td>
+<td class="left">Not classified</td>
+<td class="left">LNX</td>
+</tr>
+
+<tr>
+<td class="left">BLZ</td>
+<td class="left">BZ</td>
+<td class="left">Belize</td>
+<td class="left">Latin America &amp; Caribbean (all income levels)</td>
+<td class="left">LCN</td>
+<td class="left">Belmopan</td>
+<td class="right">-88.7713</td>
+<td class="right">17.2534</td>
+<td class="left">Upper middle income</td>
+<td class="left">UMC</td>
+<td class="left">IBRD</td>
+<td class="left">IBD</td>
+</tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+
+<pre class="src src-julia">search_wdi("countries", :capital, r"^Ka"i)
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="right" />
+
+<col  class="right" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left">iso3c</td>
+<td class="left">iso2c</td>
+<td class="left">name</td>
+<td class="left">region</td>
+<td class="left">regionId</td>
+<td class="left">capital</td>
+<td class="right">longitude</td>
+<td class="right">latitude</td>
+<td class="left">income</td>
+<td class="left">incomeId</td>
+<td class="left">lending</td>
+<td class="left">lendingId</td>
+</tr>
+
+<tr>
+<td class="left">AFG</td>
+<td class="left">AF</td>
+<td class="left">Afghanistan</td>
+<td class="left">South Asia</td>
+<td class="left">SAS</td>
+<td class="left">Kabul</td>
+<td class="right">69.1761</td>
+<td class="right">34.5228</td>
+<td class="left">Low income</td>
+<td class="left">LIC</td>
+<td class="left">IDA</td>
+<td class="left">IDX</td>
+</tr>
+
+<tr>
+<td class="left">NPL</td>
+<td class="left">NP</td>
+<td class="left">Nepal</td>
+<td class="left">South Asia</td>
+<td class="left">SAS</td>
+<td class="left">Kathmandu</td>
+<td class="right">85.3157</td>
+<td class="right">27.6939</td>
+<td class="left">Low income</td>
+<td class="left">LIC</td>
+<td class="left">IDA</td>
+<td class="left">IDX</td>
+</tr>
+
+<tr>
+<td class="left">UGA</td>
+<td class="left">UG</td>
+<td class="left">Uganda</td>
+<td class="left">Sub-Saharan Africa (all income levels)</td>
+<td class="left">SSF</td>
+<td class="left">Kampala</td>
+<td class="right">32.5729</td>
+<td class="right">0.314269</td>
+<td class="left">Low income</td>
+<td class="left">LIC</td>
+<td class="left">IDA</td>
+<td class="left">IDX</td>
+</tr>
+</tbody>
+</table>
+
 
 <p>
 julia&gt; search<sub>wdi</sub>("countries","lending",r"IBRD"i)
@@ -828,8 +1276,9 @@ one then runs the `update<sub>us</sub><sub>gnp</sub><sub>per</sub><sub>cap</sub>
 </div>
 </div>
 </div>
+</div>
 <div id="postamble" class="status">
-<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.7b)</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.7)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
