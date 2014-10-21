@@ -8,7 +8,11 @@ using DataFrames
 using Base.Dates
 using TimeData
 
-export wdi, search_wdi
+export #
+loadWBMeta,
+getWBMeta,
+search_wdi,
+wdi
 
 include("download.jl")
 include("ctrs_indicators.jl")

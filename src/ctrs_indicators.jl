@@ -1,21 +1,68 @@
-function get_countries()
+function loadWBMeta(data::String)
+    if data == "countries"
+        return loadCountryMeta()
+    elseif data == "indicators"
+        return loadIndicatorMeta()
+    else
+        error("Metadata is either countries or indicators")
+    end
+end
+
+function getWBMeta(data::String)
+    ## download data
+    if data == "countries"
+        countryData = download_countries()
+        filename = joinpath(Pkg.dir("WorldBankData"),
+                            "data/countryMeta.csv")
+        writetable(filename, countryData)
+        set_country_cache(countryData)
+        return countryData
+    elseif data == "indicators"
+        indicatData = download_indicators()
+        filename = joinpath(Pkg.dir("WorldBankData"),
+                            "data/indicatorMeta.csv")
+        writetable(filename, indicatData)
+        set_indicator_cache(indicatData)
+        return indicatData
+    else
+        error("Metadata is either countries or indicators")
+    end
+end
+
+function loadCountryMeta()
+    ## try to load from cache
     if country_cache == false
-        set_country_cache(download_countries())
+        filename = joinpath(Pkg.dir("WorldBankData"),
+                            "data/countryMeta.csv")
+        if isfile(filename) # load from disk
+            countryData = readtable(filename)
+            set_country_cache(countryData)
+            return countryData
+        else # download country metadata
+            return getWBMeta("countries")
+        end
+            
+    else # return data from cache
+        return country_cache
     end
-    country_cache
 end
 
-function clear_cache()
-    global country_cache = false
-    global indicator_cache = false
-    println("Cache has been cleared.")
-end
-
-function get_indicators()
+function loadIndicatorMeta()
+    ## try to load from cache
     if indicator_cache == false
-        set_indicator_cache(download_indicators())
+        filename = joinpath(Pkg.dir("WorldBankData"),
+                            "data/indicatorMeta.csv")
+        if isfile(filename) # load from disk
+            indicatData = readtable(filename)
+            set_indicator_cache(indicatData)
+            return indicatData
+        else # download indicator metadata
+            return getWBMeta("indicators")
+        end
+            
+    else # return data from cache
+        return indicator_cache
     end
-    indicator_cache
 end
 
 function parse_indicator(json::Array{Any,1})

@@ -4,28 +4,52 @@ using Base.Test
 using DataFrames
 using WorldBankData
 
-## get_countries
-##--------------
+## load country data
+##------------------
 
-WorldBankData.get_countries()
+## datafilename
+countryFile = joinpath(Pkg.dir("WorldBankData"),
+                       "data/countryMeta.csv")
+if isfile(countryFile)
+    # remove it
+    run(`rm $countryFile`)
+end
 
-@test isa(WorldBankData.country_cache, DataFrame)
+indicatorFile = joinpath(Pkg.dir("WorldBankData"),
+                       "data/indicatorMeta.csv")
+if isfile(indicatorFile)
+    ## remove it
+    run(`rm $indicatorFile`)
+end
+
+## get country metadata
+##---------------------
+
+WorldBankData.loadWBMeta("countries")
+
+@test isfile(countryFile) # should exist now
+@test isa(WorldBankData.country_cache, DataFrame) # should be in cache 
 @test size(WorldBankData.country_cache, 2) == 12
 
-## get_indicators
-##---------------
+## get indicator metadata
+##-----------------------
 
-WorldBankData.get_indicators()
+WorldBankData.loadWBMeta("indicators")
 
+@test isfile(indicatorFile) # should exist now
 @test isa(WorldBankData.indicator_cache, DataFrame)
 @test size(WorldBankData.indicator_cache, 2) == 6
 
-## clear_cache
-##------------
+## try to repair corrupted cache
+##------------------------------
 
-WorldBankData.clear_cache()
-@test WorldBankData.indicator_cache == false
-@test WorldBankData.country_cache == false
+WorldBankData.set_country_cache(DataFrame(a = 3))
+WorldBankData.getWBMeta("countries")
+
+@test isfile(countryFile) # should exist now
+@test isa(WorldBankData.country_cache, DataFrame) # should be in cache 
+@test size(WorldBankData.country_cache, 2) == 12
+
 
 ## parse_country
 ##--------------
