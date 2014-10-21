@@ -133,48 +133,202 @@ argument ~format~.
 | 1963-12-31 | BR    | Brazil  |            250 |            56.08 | BRA   | Brazil | Latin America & Caribbean (all income levels) | LCN      | Brasilia |  -47.9292 | -15.7801 | Upper middle income | UMC      | IBRD    | IBD       |
 | 1964-12-31 | BR    | Brazil  |            270 | 56.5102926829268 | BRA   | Brazil | Latin America & Caribbean (all income levels) | LCN      | Brasilia |  -47.9292 | -15.7801 | Upper middle income | UMC      | IBRD    | IBD       |
 
-** Searching
+* Indicator and country metadata
+
+In addition to the indicator itself, the World Bank also provides a
+lot of metadata for countries and indicators which can be downloaded
+with functions ~get_countries~ and ~get_indicators~.
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+   countryData = get_countries()
+   countryData[1:5, :]
+#+END_SRC
+
+#+RESULTS:
+| iso3c | iso2c | name        | region                                        | regionId | capital    | longitude | latitude | income               | incomeId | lending        | lendingId |
+| ABW   | AW    | Aruba       | Latin America & Caribbean (all income levels) | LCN      | Oranjestad |  -70.0167 |  12.5167 | High income: nonOECD | NOC      | Not classified | LNX       |
+| AFG   | AF    | Afghanistan | South Asia                                    | SAS      | Kabul      |   69.1761 |  34.5228 | Low income           | LIC      | IDA            | IDX       |
+| AFR   | A9    | Africa      | Aggregates                                    | NA       | NA         |        NA |       NA | Aggregates           | NA       | Aggregates     | NA        |
+| AGO   | AO    | Angola      | Sub-Saharan Africa (all income levels)        | SSF      | Luanda     |    13.242 | -8.81155 | Upper middle income  | UMC      | IBRD           | IBD       |
+| ALB   | AL    | Albania     | Europe & Central Asia (all income levels)     | ECS      | Tirane     |   19.8172 |  41.3317 | Upper middle income  | UMC      | IBRD           | IBD       |
+
+Country metadata provides information for each country or aggregated
+entity with respect to the following characteristics:
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+names(countryData)
+#+END_SRC
+
+#+RESULTS:
+| iso3c     |
+| iso2c     |
+| name      |
+| region    |
+| regionId  |
+| capital   |
+| longitude |
+| latitude  |
+| income    |
+| incomeId  |
+| lending   |
+| lendingId |
+
+Overall, the country metadata is a ~DataFrame~ of the following size: 
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+size(countryData)
+#+END_SRC
+
+#+RESULTS:
+| 262 |
+|  12 |
+
+Quite similarly, you can access the complete indicator metadata
+through function ~get_indicators~.
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+indicatorData = get_indicators()
+indicatorData[1:5, :]
+#+END_SRC
+
+#+RESULTS:
+| indicator            | name                                     | description                                                                                                                | source_database | source_databaseId | source_organization                                                   |
+| 1.0.HCount.1.25usd   | Poverty Headcount ($1.25 a day)          | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.10usd     | Under Middle Class ($10 a day) Headcount | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.2.5usd    | Poverty Headcount ($2.50 a day)          | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.Mid10to50 | Middle Class ($10-50 a day) Headcount    | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.Ofcl      | Official Moderate Poverty Rate-National  | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of data from National Statistical Offices. |
+
+The metadata contains information about each indicator regarding the
+following characteristics:
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+names(indicatorData)
+#+END_SRC
+
+#+RESULTS:
+| indicator           |
+| name                |
+| description         |
+| source_database     |
+| source_databaseId   |
+| source_organization |
+
+Just take a look at the size of this table in order to get an
+impression about the huge amount of indicators that are provided by
+the World Bank.
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+size(indicatorData)
+#+END_SRC
+
+#+RESULTS:
+| 13074 |
+|     6 |
+
+You can use these two ~DataFrames~ of country and indicator metadata
+to easily search for information through function ~search_wdi~. Before
+looking at that, however, let's first spend a few words on downloading
+/ caching of metadata.
+
+On your first call of ~get_countries~ and ~get_indicators~ you will
+download the respective information from the World Bank webpage.
+However, as we have just seen, especially for indicators the metadata
+is quite huge, so that we do not want to download it each time. Hence,
+after the first download, ~get_countries~ and ~get_indicators~ will
+automatically store the information two global variables:
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+   WorldBankData.country_cache[1:5, :]
+#+END_SRC
+
+#+RESULTS:
+| iso3c | iso2c | name        | region                                        | regionId | capital    | longitude | latitude | income               | incomeId | lending        | lendingId |
+| ABW   | AW    | Aruba       | Latin America & Caribbean (all income levels) | LCN      | Oranjestad |  -70.0167 |  12.5167 | High income: nonOECD | NOC      | Not classified | LNX       |
+| AFG   | AF    | Afghanistan | South Asia                                    | SAS      | Kabul      |   69.1761 |  34.5228 | Low income           | LIC      | IDA            | IDX       |
+| AFR   | A9    | Africa      | Aggregates                                    | NA       | NA         |        NA |       NA | Aggregates           | NA       | Aggregates     | NA        |
+| AGO   | AO    | Angola      | Sub-Saharan Africa (all income levels)        | SSF      | Luanda     |    13.242 | -8.81155 | Upper middle income  | UMC      | IBRD           | IBD       |
+| ALB   | AL    | Albania     | Europe & Central Asia (all income levels)     | ECS      | Tirane     |   19.8172 |  41.3317 | Upper middle income  | UMC      | IBRD           | IBD       |
+
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+   WorldBankData.indicator_cache[1:5, :]
+#+END_SRC
+
+#+RESULTS:
+| indicator            | name                                     | description                                                                                                                | source_database | source_databaseId | source_organization                                                   |
+| 1.0.HCount.1.25usd   | Poverty Headcount ($1.25 a day)          | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.10usd     | Under Middle Class ($10 a day) Headcount | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.2.5usd    | Poverty Headcount ($2.50 a day)          | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.Mid10to50 | Middle Class ($10-50 a day) Headcount    | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of SEDLAC (CEDLAS and the World Bank).     |
+| 1.0.HCount.Ofcl      | Official Moderate Poverty Rate-National  | The poverty headcount index measures the proportion of the population with daily per capita income below the poverty line. | LAC Equity Lab  |                37 | LAC Equity Lab tabulations of data from National Statistical Offices. |
+
+Before the first download, both variables are simply set to ~false~. 
+
+Hence, whenever you access country or indicator information after the
+first call, you will actually access the information stored locally.
+Still, however, you will download the data once per session.
+
+However, sometimes there might sneak in some errors into the cached
+data. In such a case, simply delete the current cache.
+
+```julia
+julia> clear_cache()
+Cache has been cleared.
+```
+
+
+** Metadata caching
+
+- cached: might be corrupted (problems with downloading process)
+- cache can be clean
+- alternatively: no download
+- save to file, load from disk
+
+* Searching
 
 The most convenient way to explore indicators probably still is the
 [[http://data.worldbank.org/indicator][World Bank webpage]], where you can easily use the search functionality
-to find an indicator. Once you found the indicator that you are
-looking for, you can read off the indicator shortcut name (e.g.
+to find what your are looking for. Once you found the indicator of
+interest, you can read off the indicator shortcut name (e.g.
 SP.DYN.LE00.IN) from the URL of the indicator webpage.
 
+Therefore, download country and indicator information, caching it. You
+can then simply search in them
+
 Alternatively, however, this package also contains functionality to
-interactively search the database from Julia itself.
+interactively search the database from Julia itself. 
+~search_wdi~
+
+The `search_wdi()` function internally caches the country and
+indicator metadata and therefore downloads the country and indicator
+data only once per session. Even that is usually not necessary. This
+data can easily be stored on local disk.
 
 
-However, the module does provide a search function: `search_wdi()`.
+The search function uses two DataFrames `country_cache` and
+`indicator_cache` and searches through these. On the first search it
+will download the data from the World Bank website. This takes much
+longer for the larger indicators data. This only happens once per
+session. After the first use the data is cached.
 
 One can search for "countries" or "indicators" data.
 
-### Example for country search by name
+To search the ~:name~ column of 
 
-```julia
 #+BEGIN_SRC julia :results value :tangle test/doctests.jl
-res = search_wdi("countries", :name, r"united"i)
-res[:name]
+   res = search_wdi("countries", :name, r"united"i)
+   res
 #+END_SRC
 
 #+RESULTS:
-| United Arab Emirates |
-| United Kingdom       |
-| United States        |
+| iso3c | iso2c | name                 | region                                         | regionId | capital         | longitude | latitude | income               | incomeId | lending        | lendingId |
+| ARE   | AE    | United Arab Emirates | Middle East & North Africa (all income levels) | MEA      | Abu Dhabi       |   54.3705 |  24.4764 | High income: nonOECD | NOC      | Not classified | LNX       |
+| GBR   | GB    | United Kingdom       | Europe & Central Asia (all income levels)      | ECS      | London          | -0.126236 |  51.5002 | High income: OECD    | OEC      | Not classified | LNX       |
+| USA   | US    | United States        | North America                                  | NAC      | Washington D.C. |   -77.032 |  38.8895 | High income: OECD    | OEC      | Not classified | LNX       |
 
-#+BEGIN_SRC julia :results value :tangle test/doctests.jl
-res[:iso2c]
-#+END_SRC
 
-#+RESULTS:
-| AE |
-| GB |
-| US |
+Search for indicator by description
 
-### Example for indicator search by description
-
-```julia
-julia> 
 #+BEGIN_SRC julia :results value :tangle test/doctests.jl
 res = search_wdi("indicators", :description, r"gross national expenditure"i)
 names(res)
@@ -213,22 +367,19 @@ res[:indicator]
 | NE.DAB.TOTL.ZS |
 
 
-### The search_wdi() function
+Arguments:
 
 The `search_wdi()` function has the following arguments
-```julia
+#+BEGIN_SRC julia :results value :tangle test/doctests.jl
 function search_wdi(data_source, entry, regex)
-```
+#+END_SRC
+
+
 
 The `data_source` is either `countries` or `indicators`. The entry is
 one of the attributes (like name). The regex is the regular expression
 to search for.
 
-The search function uses two DataFrames `country_cache` and
-`indicator_cache` and searches through these. On the first search it
-will download the data from the World Bank website. This takes much
-longer for the larger indicators data. This only happens once per
-session. After the first use the data is cached.
 
 Note that the last argument to `search_wdi()` is a regular expression
 denoted by `r"..."` and an `i` at the end means that it is case
@@ -352,18 +503,6 @@ http://api.worldbank.org/countries/US/indicators/EN.ATM.CO2E.KT?date=1800:3000&p
 ...
 ```
 
-### Cache
-
-The data in the World Bank database changes infrequently. Therefore it
-makes little sense to download it every time a script is run.
-
-However, sometimes there might sneak in some errors into the cached
-data. In such a case, simply delete the current cache.
-
-```julia
-julia> clear_cache()
-Cache has been cleared.
-```
 
 #### Metadata
 
@@ -399,7 +538,7 @@ disk.
 #### Indicator data
 
 In a similar way the indicator data itself can be cached.
-
+p
 ```julia
 using WorldBankData
 using DataFrames
@@ -411,3 +550,5 @@ end
 df=readtable("us_gnp.csv")
 ```
 one then runs the `update_us_gnp_per_cap()` function only when needed.
+
+* Acknowledgement
