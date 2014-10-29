@@ -3,7 +3,7 @@ module TestWDICountries
 using Base.Test
 using DataFrames
 using WorldBankData
-
+using Dates
 
 ## the worldbank database shows some peculiarities
 url =

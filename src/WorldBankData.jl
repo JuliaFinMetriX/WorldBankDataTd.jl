@@ -5,7 +5,7 @@ using HTTPClient.HTTPC
 using JSON
 using DataArrays
 using DataFrames
-using Base.Dates
+using Dates
 using TimeData
 
 export #

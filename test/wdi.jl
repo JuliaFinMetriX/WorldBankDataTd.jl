@@ -2,6 +2,7 @@ module TestParseWDI
 
 using Base.Test
 using WorldBankData
+using Dates
 
 us_gnp_data = {  { "total"=>23,"per_page"=>"25000","pages"=>1,"page"=>1 },
                  { ["date"=>"2012","value"=>"52340","indicator"=>["id"=>"NY.GNP.PCAP.CD","value"=>"GNI per capita, Atlas method (current US\$)"],"country"=>["id"=>"US","value"=>"United States"],"decimal"=>"0"],

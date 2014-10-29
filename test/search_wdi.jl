@@ -2,6 +2,7 @@ module TestWDISearchWDI
 
 using Base.Test
 using WorldBankData
+using Dates
 
 country_data = { { "total"=>4,"per_page"=>"25000","pages"=>1,"page"=>1 },
                  {
