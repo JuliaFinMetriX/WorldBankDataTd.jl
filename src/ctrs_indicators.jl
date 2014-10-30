@@ -1,4 +1,7 @@
 function loadWBMeta(data::String)
+    ## load data in fastest possible way
+    ## data will be in cache afterwards
+    ## without manual interference, file will be on disk
     if data == "countries"
         return loadCountryMeta()
     elseif data == "indicators"
@@ -8,8 +11,48 @@ function loadWBMeta(data::String)
     end
 end
 
+function loadCountryMeta()
+    ## load data from cache, disk or internet
+    ## data will be in cache afterwards
+    if country_cache == false
+        filename = joinpath(Pkg.dir("WorldBankData"),
+                            "data/countryMeta.csv")
+        if isfile(filename) # load from disk
+            countryData = readtable(filename)
+            set_country_cache(countryData)
+            return countryData
+        else
+            # download data, store to disk and load to cache
+            return getWBMeta("countries")
+        end
+            
+    else # return data from cache
+        return country_cache
+    end
+end
+
+function loadIndicatorMeta()
+    ## load data from cache, disk or internet
+    ## data will be in cache afterwards
+    if indicator_cache == false
+        filename = joinpath(Pkg.dir("WorldBankData"),
+                            "data/indicatorMeta.csv")
+        if isfile(filename) # load from disk
+            indicatData = readtable(filename)
+            set_indicator_cache(indicatData)
+            return indicatData
+        else
+            # download data, store to disk and load to cache
+            return getWBMeta("indicators")
+        end
+            
+    else # return data from cache
+        return indicator_cache
+    end
+end
+
 function getWBMeta(data::String)
-    ## download data
+    ## download data, save to disk and load in cache
     if data == "countries"
         countryData = download_countries()
         filename = joinpath(Pkg.dir("WorldBankData"),
@@ -29,41 +72,6 @@ function getWBMeta(data::String)
     end
 end
 
-function loadCountryMeta()
-    ## try to load from cache
-    if country_cache == false
-        filename = joinpath(Pkg.dir("WorldBankData"),
-                            "data/countryMeta.csv")
-        if isfile(filename) # load from disk
-            countryData = readtable(filename)
-            set_country_cache(countryData)
-            return countryData
-        else # download country metadata
-            return getWBMeta("countries")
-        end
-            
-    else # return data from cache
-        return country_cache
-    end
-end
-
-function loadIndicatorMeta()
-    ## try to load from cache
-    if indicator_cache == false
-        filename = joinpath(Pkg.dir("WorldBankData"),
-                            "data/indicatorMeta.csv")
-        if isfile(filename) # load from disk
-            indicatData = readtable(filename)
-            set_indicator_cache(indicatData)
-            return indicatData
-        else # download indicator metadata
-            return getWBMeta("indicators")
-        end
-            
-    else # return data from cache
-        return indicator_cache
-    end
-end
 
 function parse_indicator(json::Array{Any,1})
     indicator = ASCIIString[]

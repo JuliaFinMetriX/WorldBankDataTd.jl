@@ -44,7 +44,7 @@ WorldBankData.loadWBMeta("indicators")
 ## try to repair corrupted cache
 ##------------------------------
 
-WorldBankData.set_country_cache(DataFrame(a = 3))
+WorldBankData.set_country_cache(DataFrame(a = 3, iso2c = "ZB"))
 WorldBankData.getWBMeta("countries")
 
 @test isfile(countryFile) # should exist now
