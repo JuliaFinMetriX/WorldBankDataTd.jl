@@ -401,7 +401,7 @@ functions. Simply call function ~loadPlotting~ to load ~Winston~ and
 ~Gadfly~ packages, and directly plot the data as ~Timenum~ object
 through ~wstPlot~ or ~gdfPlot~:
 
-#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+#+BEGIN_SRC julia :results value :tangle no
       data = wdi("AG.LND.ARBL.HA.PC", "US", 1900, 2011)
       arableLand = convert(Timematr, data[symbol("AG.LND.ARBL.HA.PC")])
 

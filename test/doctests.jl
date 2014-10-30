@@ -75,17 +75,6 @@ usData = chkDates(x-> x[:iso2c] .== "US", eachdate(data)) |>
          x -> data[x[:], :]
 usData
 
-data = wdi("AG.LND.ARBL.HA.PC", "US", 1900, 2011)
-arableLand = convert(Timematr, data[symbol("AG.LND.ARBL.HA.PC")])
-
-loadPlotting()
-
-## using Winston
-wstPlot(arableLand)
-
-## using Gadfly
-gdfPlot(arableLand)
-
 dfAS = wdi("EN.ATM.CO2E.KT", "AS")
 
 end
