@@ -6,7 +6,8 @@ my_tests = ["ctrs_indicators.jl",
             "utils.jl",
             "wdi.jl",
             "format.jl",
-            "search_wdi.jl"] 
+            "search_wdi.jl",
+            "doctests.jl"] 
 
 println("Running tests:")
 
