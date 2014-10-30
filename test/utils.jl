@@ -2,7 +2,6 @@ module TestUtils
 
 using Base.Test
 using DataFrames
-using Base.Dates
 using WorldBankData
 using Dates
 

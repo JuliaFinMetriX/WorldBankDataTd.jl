@@ -53,12 +53,12 @@ function search_indicators(entry::Symbol,regx::Regex)
 end
 
 function country_match(entry::Symbol,regex::Regex)
-    df = get_countries()
+    df = loadWBMeta("countries")
     df_match(df,entry,regex)
 end
 
 function indicator_match(entry::Symbol,regex::Regex)
-    df = get_indicators()
+    df = loadWBMeta("indicators")
     df_match(df,entry,regex)
 end
 

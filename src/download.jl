@@ -50,7 +50,7 @@ function wdi(indicators::Union(ASCIIString,Array{ASCIIString,1}),
     end
 
     if extra
-        cntdat = get_countries()
+        cntdat = getWBMeta("countries")
         df = join(df, cntdat, on = :iso2c)
     end
 
