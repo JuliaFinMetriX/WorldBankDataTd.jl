@@ -432,3 +432,7 @@ the original code was so nice that I decided it was worthwhile to
 spend some additional effort to publish and maintain an updated
 version as official package to make it available to as many people as
 possible.
+
+#+BEGIN_SRC julia :exports none :results silent :tangle test/doctests.jl
+end
+#+END_SRC

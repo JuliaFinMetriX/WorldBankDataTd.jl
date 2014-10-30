@@ -87,3 +87,5 @@ wstPlot(arableLand)
 gdfPlot(arableLand)
 
 dfAS = wdi("EN.ATM.CO2E.KT", "AS")
+
+end
