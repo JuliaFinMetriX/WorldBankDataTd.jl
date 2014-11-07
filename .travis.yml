@@ -13,15 +13,15 @@ script:
   - julia -e 'Pkg.add("DataFrames")'
   - julia -e 'Pkg.add("TimeData")'
   - julia -e 'Pkg.update()'
-#  - julia -e 'Pkg.init(); Pkg.add("WorldBankData")'
-  - julia -e 'Pkg.init(); Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankData.jl.git")'
+#  - julia -e 'Pkg.init(); Pkg.add("WorldBankDataTd")'
+  - julia -e 'Pkg.init(); Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankDataTd.jl.git")'
   - echo "Testing latest release:"
-  - julia -e 'Pkg.test("WorldBankData")'
-  - julia -e 'Pkg.checkout("WorldBankData")'
+  - julia -e 'Pkg.test("WorldBankDataTd")'
+  - julia -e 'Pkg.checkout("WorldBankDataTd")'
   - echo "Testing master:"
-  - mkdir -p ~/.julia/WorldBankData
-  - cp -R ./* ~/.julia/WorldBankData/
+  - mkdir -p ~/.julia/WorldBankDataTd
+  - cp -R ./* ~/.julia/WorldBankDataTd/
   - julia --code-coverage ./test/runtests.jl
 
 after_success:
-  - julia -e 'cd(Pkg.dir("WorldBankData")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - julia -e 'cd(Pkg.dir("WorldBankDataTd")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
