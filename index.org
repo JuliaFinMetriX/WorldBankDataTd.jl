@@ -90,7 +90,7 @@ longitude, latitude, income range, etc. to each observation. Output
 will be of type ~TimeData~ by default, but can be set to ~DataFrame~
 through keyword argument ~format~.
 
-#+BEGIN_SRC julia :results value :tangle test/doctests.jl
+#+BEGIN_SRC julia :results value :tangle off
    Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankDataTd.jl.git")
 #+END_SRC
 

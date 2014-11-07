@@ -7,8 +7,6 @@ using TimeData
 
 println("\n Running documentation tests\n")
 
-Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankDataTd.jl.git")
-
 using WorldBankDataTd
    
 ## single indicator, single country
