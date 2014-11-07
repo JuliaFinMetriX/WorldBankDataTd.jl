@@ -1,7 +1,7 @@
 module TestParseWDI
 
 using Base.Test
-using WorldBankData
+using WorldBankDataTd
 using Dates
 
 us_gnp_data = {  { "total"=>23,"per_page"=>"25000","pages"=>1,"page"=>1 },
@@ -15,7 +15,7 @@ us_gnp_data = {  { "total"=>23,"per_page"=>"25000","pages"=>1,"page"=>1 },
                  }
               }
 
-us_gnp = WorldBankData.parse_wdi("NY.GNP.PCAP.CD",us_gnp_data[2],2006,2012)
+us_gnp = WorldBankDataTd.parse_wdi("NY.GNP.PCAP.CD",us_gnp_data[2],2006,2012)
 
 @test us_gnp[:time] == Date[Date(2012,12,31), Date(2011,12,31),
                             Date(2010,12,31), Date(2009,12,31),

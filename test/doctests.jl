@@ -7,29 +7,31 @@ using TimeData
 
 println("\n Running documentation tests\n")
 
-using WorldBankData
+Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankDataTd.jl.git")
 
+using WorldBankDataTd
+   
 ## single indicator, single country
-gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", "BR")
+gnp = WorldBankDataTd.wdi("NY.GNP.PCAP.CD", "BR")
 
 ## single indicator, multiple countries
-gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
+gnp = WorldBankDataTd.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
 
 ## multiple indicators, single country
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          "BR")
 
 ## multiple indicators, multiple countries
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          ["BR", "US", "DE"])
 
 ## same, but as DataFrame
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          ["BR", "US", "DE"],
                          format = DataFrame)
 
 ## multiple indicators, multiple countries, additional information
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          ["BR", "US", "DE"], extra = true)
 
 data[1:5, :]
@@ -48,9 +50,9 @@ names(indicatorData)
 
 size(indicatorData)
 
-WorldBankData.country_cache[1:5, :]
+WorldBankDataTd.country_cache[1:5, :]
 
-WorldBankData.indicator_cache[1:5, :]
+WorldBankDataTd.indicator_cache[1:5, :]
 
 res = search_wdi("countries", :name, r"united"i)
 res

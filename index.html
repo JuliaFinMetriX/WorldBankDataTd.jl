@@ -96,9 +96,9 @@
 <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
 <header>
 <div class="inner">
-<h1>WorldBankData.jl</h1>
-<h2>WorldBankData package for Julia language</h2>
-<a href="https://github.com/JuliaFinMetriX/WorldBankData.jl" class="button"><small>View project on</small>GitHub</a>
+<h1>WorldBankDataTd.jl</h1>
+<h2>WorldBankDataTd package for Julia language</h2>
+<a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl" class="button"><small>View project on</small>GitHub</a>
 </div>
 </header>
 <div id="content-wrapper">
@@ -107,15 +107,15 @@
 <a href="https://github.com/JuliaFinMetriX">
 <img src="./logo.png" width="200" height="114">
 </a>
-<a href="https://github.com/JuliaFinMetriX/WorldBankData.jl/zipball/master" class="button">
+<a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl/zipball/master" class="button">
 <small>Download</small>
 .zip file
 </a>
-<a href="https://github.com/JuliaFinMetriX/WorldBankData.jl/tarball/master" class="button">
+<a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl/tarball/master" class="button">
 <small>Download</small>
 .tar.gz file
 </a>
-<p class="repo-owner"><a href="https://github.com/JuliaFinMetriX/WorldBankData.jl"></a> maintained by <a href="https://github.com/cgroll">cgroll</a>.</p>
+<p class="repo-owner"><a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl"></a> maintained by <a href="https://github.com/cgroll">cgroll</a>.</p>
 </aside>
 <section id="main-content">
 <div>
@@ -206,33 +206,35 @@ through keyword argument <code>format</code>.
 
 <div class="org-src-container">
 
-<pre class="src src-julia">using WorldBankData
+<pre class="src src-julia">Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankDataTd.jl.git")
 </pre>
 </div>
 
 <div class="org-src-container">
 
-<pre class="src src-julia">## single indicator, single country
-gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", "BR")
+<pre class="src src-julia">using WorldBankDataTd
+
+## single indicator, single country
+gnp = WorldBankDataTd.wdi("NY.GNP.PCAP.CD", "BR")
 
 ## single indicator, multiple countries
-gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
+gnp = WorldBankDataTd.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
 
 ## multiple indicators, single country
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          "BR")
 
 ## multiple indicators, multiple countries
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          ["BR", "US", "DE"])
 
 ## same, but as DataFrame
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          ["BR", "US", "DE"],
                          format = DataFrame)
 
 ## multiple indicators, multiple countries, additional information
-data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                          ["BR", "US", "DE"], extra = true)
 
 data[1:5, :]
@@ -804,10 +806,10 @@ be refreshed.
 
 <p>
 Calling <code>loadWBMeta</code> will first try to access metadata stored in
-global variables <code>WorldBankData.country_cache</code> and
-<code>WorldBankData.indicator_cache</code> of the current session. If these
+global variables <code>WorldBankDataTd.country_cache</code> and
+<code>WorldBankDataTd.indicator_cache</code> of the current session. If these
 variables have not been assigned yet, it looks for a local version of
-the data in directory <b>WorldBankData/data</b>. If there is no local
+the data in directory <b>WorldBankDataTd/data</b>. If there is no local
 version yet, it will automatically call <code>getWBMeta</code>, which will
 download the data and store it both on local disk and as caching
 variables in the current session.
@@ -820,7 +822,7 @@ versions in our current workspace.
 
 <div class="org-src-container">
 
-<pre class="src src-julia">WorldBankData.country_cache[1:5, :]
+<pre class="src src-julia">WorldBankDataTd.country_cache[1:5, :]
 </pre>
 </div>
 
@@ -947,7 +949,7 @@ versions in our current workspace.
 
 <div class="org-src-container">
 
-<pre class="src src-julia">WorldBankData.indicator_cache[1:5, :]
+<pre class="src src-julia">WorldBankDataTd.indicator_cache[1:5, :]
 </pre>
 </div>
 
@@ -1997,14 +1999,8 @@ without warning.
 <div class="outline-text-2" id="text-5">
 <p>
 Most of the package originally has been developed by <a href="https://github.com/4gh">4gh</a> (Frank
-Herrmann) and can still be accessed in its earliest version as a
-<a href="https://github.com/4gh/WorldBankData.jl">github repository</a>. As already some time did pass since his last
-development, the code required some minor updates in order to reflect
-the more recent changes of <code>DataFrames</code>. The overall functionality of
-the original code was so nice that I decided it was worthwhile to
-spend some additional effort to publish and maintain an updated
-version as official package to make it available to as many people as
-possible.
+Herrmann) and can still be accessed through the official Julia package
+repository and on <a href="https://github.com/4gh/WorldBankData.jl">github</a>.
 </p>
 </div>
 </div>

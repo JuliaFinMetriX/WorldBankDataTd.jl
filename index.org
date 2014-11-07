@@ -22,9 +22,9 @@
 
 #+HTML_HEAD_EXTRA: <header>
 #+HTML_HEAD_EXTRA:  <div class="inner">
-#+HTML_HEAD_EXTRA:         <h1>WorldBankData.jl</h1>
-#+HTML_HEAD_EXTRA:         <h2>WorldBankData package for Julia language</h2>
-#+HTML_HEAD_EXTRA:         <a href="https://github.com/JuliaFinMetriX/WorldBankData.jl" class="button"><small>View project on</small>GitHub</a>
+#+HTML_HEAD_EXTRA:         <h1>WorldBankDataTd.jl</h1>
+#+HTML_HEAD_EXTRA:         <h2>WorldBankDataTd package for Julia language</h2>
+#+HTML_HEAD_EXTRA:         <a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl" class="button"><small>View project on</small>GitHub</a>
 #+HTML_HEAD_EXTRA:       </div>
 #+HTML_HEAD_EXTRA:     </header>
 
@@ -35,15 +35,15 @@
 #+HTML_HEAD_EXTRA:    <a href="https://github.com/JuliaFinMetriX">
 #+HTML_HEAD_EXTRA:    <img src="./logo.png" width="200" height="114">
 #+HTML_HEAD_EXTRA:    </a>
-#+HTML_HEAD_EXTRA:    <a href="https://github.com/JuliaFinMetriX/WorldBankData.jl/zipball/master" class="button">
+#+HTML_HEAD_EXTRA:    <a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl/zipball/master" class="button">
 #+HTML_HEAD_EXTRA:      <small>Download</small>
 #+HTML_HEAD_EXTRA:      .zip file
 #+HTML_HEAD_EXTRA:    </a>
-#+HTML_HEAD_EXTRA:    <a href="https://github.com/JuliaFinMetriX/WorldBankData.jl/tarball/master" class="button">
+#+HTML_HEAD_EXTRA:    <a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl/tarball/master" class="button">
 #+HTML_HEAD_EXTRA:      <small>Download</small>
 #+HTML_HEAD_EXTRA:      .tar.gz file
 #+HTML_HEAD_EXTRA:    </a>
-#+HTML_HEAD_EXTRA:     <p class="repo-owner"><a href="https://github.com/JuliaFinMetriX/WorldBankData.jl"></a> maintained by <a href="https://github.com/cgroll">cgroll</a>.</p>
+#+HTML_HEAD_EXTRA:     <p class="repo-owner"><a href="https://github.com/JuliaFinMetriX/WorldBankDataTd.jl"></a> maintained by <a href="https://github.com/cgroll">cgroll</a>.</p>
 #+HTML_HEAD_EXTRA:  </aside>
 #+HTML_HEAD_EXTRA:         <section id="main-content">
 #+HTML_HEAD_EXTRA:           <div>
@@ -91,34 +91,35 @@ will be of type ~TimeData~ by default, but can be set to ~DataFrame~
 through keyword argument ~format~.
 
 #+BEGIN_SRC julia :results value :tangle test/doctests.jl
-   using WorldBankData
+   Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankDataTd.jl.git")
 #+END_SRC
 
 #+RESULTS:
 
 #+BEGIN_SRC julia :results value :tangle test/doctests.jl
+   using WorldBankDataTd
       
    ## single indicator, single country
-   gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", "BR")
+   gnp = WorldBankDataTd.wdi("NY.GNP.PCAP.CD", "BR")
 
    ## single indicator, multiple countries
-   gnp = WorldBankData.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
+   gnp = WorldBankDataTd.wdi("NY.GNP.PCAP.CD", ["BR", "US", "DE"])
 
    ## multiple indicators, single country
-   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+   data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                             "BR")
 
    ## multiple indicators, multiple countries
-   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+   data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                             ["BR", "US", "DE"])
 
    ## same, but as DataFrame
-   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+   data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                             ["BR", "US", "DE"],
                             format = DataFrame)
 
    ## multiple indicators, multiple countries, additional information
-   data = WorldBankData.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
+   data = WorldBankDataTd.wdi(["NY.GNP.PCAP.CD", "SP.DYN.LE00.IN"],
                             ["BR", "US", "DE"], extra = true)
 
    data[1:5, :]
@@ -241,10 +242,10 @@ think that your local metadata was corrupted in some way and needs to
 be refreshed.
 
 Calling ~loadWBMeta~ will first try to access metadata stored in
-global variables ~WorldBankData.country_cache~ and
-~WorldBankData.indicator_cache~ of the current session. If these
+global variables ~WorldBankDataTd.country_cache~ and
+~WorldBankDataTd.indicator_cache~ of the current session. If these
 variables have not been assigned yet, it looks for a local version of
-the data in directory *WorldBankData/data*. If there is no local
+the data in directory *WorldBankDataTd/data*. If there is no local
 version yet, it will automatically call ~getWBMeta~, which will
 download the data and store it both on local disk and as caching
 variables in the current session.
@@ -253,7 +254,7 @@ Hence, as we already did load the data, we can access the cached
 versions in our current workspace.
 
 #+BEGIN_SRC julia :results value :tangle test/doctests.jl
-   WorldBankData.country_cache[1:5, :]
+   WorldBankDataTd.country_cache[1:5, :]
 #+END_SRC
 
 #+RESULTS:
@@ -265,7 +266,7 @@ versions in our current workspace.
 | ALB   | AL    | Albania     | Europe & Central Asia (all income levels)     | ECS      | Tirane     |   19.8172 |  41.3317 | Upper middle income  | UMC      | IBRD           | IBD       |
 
 #+BEGIN_SRC julia :results value :tangle test/doctests.jl
-   WorldBankData.indicator_cache[1:5, :]
+   WorldBankDataTd.indicator_cache[1:5, :]
 #+END_SRC
 
 #+RESULTS:
@@ -424,14 +425,8 @@ without warning.
 * Acknowledgement
 
 Most of the package originally has been developed by [[https://github.com/4gh][4gh]] (Frank
-Herrmann) and can still be accessed in its earliest version as a
-[[https://github.com/4gh/WorldBankData.jl][github repository]]. As already some time did pass since his last
-development, the code required some minor updates in order to reflect
-the more recent changes of ~DataFrames~. The overall functionality of
-the original code was so nice that I decided it was worthwhile to
-spend some additional effort to publish and maintain an updated
-version as official package to make it available to as many people as
-possible.
+Herrmann) and can still be accessed through the official Julia package
+repository and on [[https://github.com/4gh/WorldBankData.jl][github]].
 
 #+BEGIN_SRC julia :exports none :results silent :tangle test/doctests.jl
 end

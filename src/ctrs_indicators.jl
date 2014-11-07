@@ -15,7 +15,7 @@ function loadCountryMeta()
     ## load data from cache, disk or internet
     ## data will be in cache afterwards
     if country_cache == false
-        filename = joinpath(Pkg.dir("WorldBankData"),
+        filename = joinpath(Pkg.dir("WorldBankDataTd"),
                             "data/countryMeta.csv")
         if isfile(filename) # load from disk
             countryData = readtable(filename)
@@ -35,7 +35,7 @@ function loadIndicatorMeta()
     ## load data from cache, disk or internet
     ## data will be in cache afterwards
     if indicator_cache == false
-        filename = joinpath(Pkg.dir("WorldBankData"),
+        filename = joinpath(Pkg.dir("WorldBankDataTd"),
                             "data/indicatorMeta.csv")
         if isfile(filename) # load from disk
             indicatData = readtable(filename)
@@ -55,14 +55,14 @@ function getWBMeta(data::String)
     ## download data, save to disk and load in cache
     if data == "countries"
         countryData = download_countries()
-        filename = joinpath(Pkg.dir("WorldBankData"),
+        filename = joinpath(Pkg.dir("WorldBankDataTd"),
                             "data/countryMeta.csv")
         writetable(filename, countryData)
         set_country_cache(countryData)
         return countryData
     elseif data == "indicators"
         indicatData = download_indicators()
-        filename = joinpath(Pkg.dir("WorldBankData"),
+        filename = joinpath(Pkg.dir("WorldBankDataTd"),
                             "data/indicatorMeta.csv")
         writetable(filename, indicatData)
         set_indicator_cache(indicatData)

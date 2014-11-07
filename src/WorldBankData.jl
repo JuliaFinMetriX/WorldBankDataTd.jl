@@ -1,5 +1,5 @@
 using TimeData
-module WorldBankData
+module WorldBankDataTd
 
 using HTTPClient.HTTPC
 using JSON

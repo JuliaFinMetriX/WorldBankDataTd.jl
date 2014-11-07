@@ -1,5 +1,5 @@
 using Base.Test
-using WorldBankData
+using WorldBankDataTd
 using Dates
 
 my_tests = ["ctrs_indicators.jl",

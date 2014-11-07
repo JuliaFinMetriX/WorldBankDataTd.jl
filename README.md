@@ -1,13 +1,19 @@
-[![Build Status](https://travis-ci.org/JuliaFinMetriX/WorldBankData.jl.svg)](https://travis-ci.org/JuliaFinMetriX/WorldBankData.jl)
-[![Coverage Status](https://coveralls.io/repos/JuliaFinMetriX/WorldBankData.jl/badge.png)](https://coveralls.io/r/JuliaFinMetriX/WorldBankData.jl)
+[![Build Status](https://travis-ci.org/JuliaFinMetriX/WorldBankDataTd.jl.svg)](https://travis-ci.org/JuliaFinMetriX/WorldBankDataTd.jl)
+[![Coverage Status](https://coveralls.io/repos/JuliaFinMetriX/WorldBankDataTd.jl/badge.png)](https://coveralls.io/r/JuliaFinMetriX/WorldBankDataTd.jl)
 
 # Documentation
 
-Accessing World Bank data from Julia.
+This package is NOT equal to the package `WorldBankData` from the
+official Julia package repository! Although strongly related, the
+package `WorldBankDataTd` returns data in `TimeData` format
+(`DataFrames` are possible as well). Also, caching of country and
+indicator data is more aligned to the concepts used in `EconDatasets`. 
 
-**Installation**: at the Julia REPL: `Pkg.add("WorldBankData")`
+**Installation**: 
 
-**Documentation**: [here](http://juliafinmetrix.github.io/WorldBankData.jl/).
+At the Julia REPL: `Pkg.clone("https://github.com/JuliaFinMetriX/WorldBankDataTd.jl.git")`
+
+**Documentation**: [here](http://juliafinmetrix.github.io/WorldBankDataTd.jl/).
 
 **JuliaFinMetriX**: [here](http://juliafinmetrix.github.io/).
 
@@ -17,11 +23,5 @@ Accessing World Bank data from Julia.
 
 Most of the package originally has been developed by
 [4gh](https://github.com/4gh) (Frank Herrmann) and can still be
-accessed in its earliest version as a [github
-repository](https://github.com/4gh/WorldBankData.jl). As already some
-time did pass since his last development, the code required some minor
-updates in order to reflect the more recent changes of `DataFrames`.
-The overall functionality of the original code was so nice that I
-decided it was worthwhile to spend some additional effort to publish
-and maintain an updated version as official package to make it
-available to as many people as possible.
+accessed through the official Julia package repository and on
+[github](https://github.com/4gh/WorldBankData.jl).

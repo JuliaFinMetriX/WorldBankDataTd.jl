@@ -2,21 +2,21 @@ module TestWDICountriesIndicators
 
 using Base.Test
 using DataFrames
-using WorldBankData
+using WorldBankDataTd
 using Dates
 
 ## load country data
 ##------------------
 
 ## datafilename
-countryFile = joinpath(Pkg.dir("WorldBankData"),
+countryFile = joinpath(Pkg.dir("WorldBankDataTd"),
                        "data/countryMeta.csv")
 if isfile(countryFile)
     # remove it
     run(`rm $countryFile`)
 end
 
-indicatorFile = joinpath(Pkg.dir("WorldBankData"),
+indicatorFile = joinpath(Pkg.dir("WorldBankDataTd"),
                        "data/indicatorMeta.csv")
 if isfile(indicatorFile)
     ## remove it
@@ -26,30 +26,30 @@ end
 ## get country metadata
 ##---------------------
 
-WorldBankData.loadWBMeta("countries")
+WorldBankDataTd.loadWBMeta("countries")
 
 @test isfile(countryFile) # should exist now
-@test isa(WorldBankData.country_cache, DataFrame) # should be in cache 
-@test size(WorldBankData.country_cache, 2) == 12
+@test isa(WorldBankDataTd.country_cache, DataFrame) # should be in cache 
+@test size(WorldBankDataTd.country_cache, 2) == 12
 
 ## get indicator metadata
 ##-----------------------
 
-WorldBankData.loadWBMeta("indicators")
+WorldBankDataTd.loadWBMeta("indicators")
 
 @test isfile(indicatorFile) # should exist now
-@test isa(WorldBankData.indicator_cache, DataFrame)
-@test size(WorldBankData.indicator_cache, 2) == 6
+@test isa(WorldBankDataTd.indicator_cache, DataFrame)
+@test size(WorldBankDataTd.indicator_cache, 2) == 6
 
 ## try to repair corrupted cache
 ##------------------------------
 
-WorldBankData.set_country_cache(DataFrame(a = 3, iso2c = "ZB"))
-WorldBankData.getWBMeta("countries")
+WorldBankDataTd.set_country_cache(DataFrame(a = 3, iso2c = "ZB"))
+WorldBankDataTd.getWBMeta("countries")
 
 @test isfile(countryFile) # should exist now
-@test isa(WorldBankData.country_cache, DataFrame) # should be in cache 
-@test size(WorldBankData.country_cache, 2) == 12
+@test isa(WorldBankDataTd.country_cache, DataFrame) # should be in cache 
+@test size(WorldBankDataTd.country_cache, 2) == 12
 
 
 ## parse_country
@@ -64,7 +64,7 @@ country_data = { { "total"=>4,"per_page"=>"25000","pages"=>1,"page"=>1 },
                     ["latitude"=>"-34.6118","id"=>"ARG","iso2Code"=>"AR","incomeLevel"=>["id"=>"UMC","value"=>"Upper middle income"],"adminregion"=>["id"=>"LAC","value"=>"Latin America & Caribbean (developing only)"],"lendingType"=>["id"=>"IBD","value"=>"IBRD"],"region"=>["id"=>"LCN","value"=>"Latin America & Caribbean (all income levels)"],"capitalCity"=>"Buenos Aires","name"=>"Argentina","longitude"=>"-58.4173"]
                  }
                }
-df_country = WorldBankData.parse_country(country_data)
+df_country = WorldBankDataTd.parse_country(country_data)
 
 @test df_country[:name] == UTF8String["Andorra", "Arab World", "United Arab Emirates", "Argentina"]
 @test df_country[:iso2c] == ASCIIString["AD", "1A", "AE", "AR"]
@@ -82,7 +82,7 @@ indicator_data = { { "total"=>5,"per_page"=>"25000","pages"=>1,"page"=>1 },
                    }
                  }
 
-df_indicator = WorldBankData.parse_indicator(indicator_data)
+df_indicator = WorldBankDataTd.parse_indicator(indicator_data)
 
 @test df_indicator[:indicator] == ASCIIString["12.1_TD.LOSSES", "13.1_INDUSTRY.ENERGY.INTENSITY", "14.1_AGR.ENERGY.INTENSITY", "15.1_OTHER.SECT.ENER.INTENS", "16.1_DECOMP.EFFICIENCY.IND"]
 @test df_indicator[:name] == UTF8String["Transmission and distribution losses (%)", "Energy intensity of industrial sector (MJ/\$2005)", "Energy intensity of agricultural sector (MJ/\$2005)", "Energy intensity of other sectors (MJ/\$2005)", "Divisia Decomposition Analysis - Energy Intensity component Index"]
