@@ -6,6 +6,7 @@ function wdi(indicators::Union(ASCIIString,Array{ASCIIString,1}),
              extra::Bool = false,
              format::Type = AbstractTimedata)
     ## download multiple indicators / countries
+
     if countries == "all"
         countries = all_countries
     end
@@ -39,11 +40,11 @@ function wdi(indicators::Union(ASCIIString,Array{ASCIIString,1}),
         else
             nams = names(df)
             nNams = length(nams)
-            if nNams > 4
-                allNamesExceptIndicator = nams[[[1:3], [5:end]]]
-            else
-                allNamesExceptIndicator = nams[1:3]
-            end
+            ## if nNams > 4
+                ## allNamesExceptIndicator = nams[[[1:3], [5:end]]]
+            ## else
+            allNamesExceptIndicator = nams[1:3]
+            ## end
             df = join(df, dfn, on = allNamesExceptIndicator,
                       kind = :outer)
         end
